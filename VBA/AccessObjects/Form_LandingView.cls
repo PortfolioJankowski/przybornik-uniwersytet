@@ -9,10 +9,3 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Compare Database
 
-Private Sub btnPrzedmioty_Click()
-
-End Sub
-
-Private Sub btnPrzedmioty_Enter()
-
-End Sub
