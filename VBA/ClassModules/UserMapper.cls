@@ -84,3 +84,22 @@ Private Function Q(v As Variant) As String
         Q = "'" & Replace(v, "'", "''") & "'"
     End If
 End Function
+
+Public Function CreateUserFromRecord(rs As DAO.Recordset) As user
+    Dim u As user
+    Set u = New user
+    If rs.EOF Then
+        Set CreateUserFromRecord = Nothing
+        Exit Function
+    End If
+    
+    With u
+        .NazwaUzytkownika = Trim(NzSafe(rs!NazwaUzytkownika, ""))
+        .Imie = Trim(NzSafe(rs!Imie, ""))
+        .Nazwisko = Trim(NzSafe(rs!Nazwisko, ""))
+        .AdresEmail = Trim(NzSafe(rs!AdresEmail, ""))
+        .Tytul = Trim(NzSafe(rs!Tytul, ""))
+    End With
+    
+    Set CreateUserFromRecord = u
+End Function

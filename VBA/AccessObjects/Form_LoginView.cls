@@ -52,10 +52,18 @@ Private Sub btnLogin_Click()
         Exit Sub
     End If
 
-    Set db = Nothing
-    Set rs = Nothing
+   
     
+    Dim ORM As New UserMapper
+    Set App = New AppContext
+    Set App.CurrentUser = ORM.CreateUserFromRecord(rs)
+    
+     Set db = Nothing
+    Set rs = Nothing
     
     DoCmd.Close acForm, Me.Name, acSaveNo
     DoCmd.OpenForm "LandingView"
 End Sub
+
+
+

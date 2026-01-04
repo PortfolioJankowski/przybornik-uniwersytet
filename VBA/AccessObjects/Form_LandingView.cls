@@ -9,3 +9,9 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Compare Database
 
+Private Sub Form_Load()
+    With Me
+        .txtName.value = App.CurrentUser.Imie
+        .txtDate.value = "Dzisiaj jest " & CStr(Date)
+    End With
+End Sub
