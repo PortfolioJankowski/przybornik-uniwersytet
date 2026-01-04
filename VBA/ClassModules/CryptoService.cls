@@ -11,43 +11,6 @@ Option Compare Database
 Option Explicit
 
 
-' === Windows Crypto API ===
-#If VBA7 Then
-    Private Declare PtrSafe Function CryptAcquireContext Lib "advapi32.dll" _
-        Alias "CryptAcquireContextA" ( _
-        ByRef hProv As LongPtr, _
-        ByVal pszContainer As String, _
-        ByVal pszProvider As String, _
-        ByVal dwProvType As Long, _
-        ByVal dwFlags As Long) As Long
-
-    Private Declare PtrSafe Function CryptCreateHash Lib "advapi32.dll" ( _
-        ByVal hProv As LongPtr, _
-        ByVal Algid As Long, _
-        ByVal hKey As LongPtr, _
-        ByVal dwFlags As Long, _
-        ByRef phHash As LongPtr) As Long
-
-    Private Declare PtrSafe Function CryptHashData Lib "advapi32.dll" ( _
-        ByVal hHash As LongPtr, _
-        ByRef pbData As Any, _
-        ByVal dwDataLen As Long, _
-        ByVal dwFlags As Long) As Long
-
-    Private Declare PtrSafe Function CryptGetHashParam Lib "advapi32.dll" ( _
-        ByVal hHash As LongPtr, _
-        ByVal dwParam As Long, _
-        ByRef pbData As Any, _
-        ByRef pdwDataLen As Long, _
-        ByVal dwFlags As Long) As Long
-
-    Private Declare PtrSafe Function CryptDestroyHash Lib "advapi32.dll" ( _
-        ByVal hHash As LongPtr) As Long
-
-    Private Declare PtrSafe Function CryptReleaseContext Lib "advapi32.dll" ( _
-        ByVal hProv As LongPtr, _
-        ByVal dwFlags As Long) As Long
-#End If
 
 ' === Consts ===
 Private Const PROV_RSA_AES As Long = 24
@@ -71,34 +34,26 @@ Public Function HashPassword(ByVal password As String) As String
 End Function
 
 
-Private Function Sha256Hash(ByVal text As String) As String
-    Dim hProv As LongPtr, hHash As LongPtr
+Public Function Sha256Hash(ByVal text As String) As String
+    Dim enc As Object
     Dim bytes() As Byte
-    Dim hashLen As Long
     Dim hashBytes() As Byte
     Dim i As Long
-
+    
+    ' Tworzymy obiekt Microsoft.XMLDOM do obliczeñ
+    Set enc = CreateObject("System.Security.Cryptography.SHA256Managed")
+    
+    ' Konwersja tekstu na bajty
     bytes = StrConv(text, vbFromUnicode)
-
-    If CryptAcquireContext(hProv, vbNullString, vbNullString, _
-        PROV_RSA_AES, CRYPT_VERIFYCONTEXT) = 0 Then Exit Function
-
-    If CryptCreateHash(hProv, CALG_SHA_256, 0, 0, hHash) = 0 Then GoTo Cleanup
-
-    CryptHashData hHash, bytes(0), UBound(bytes) + 1, 0
-
-    CryptGetHashParam hHash, HP_HASHVAL, ByVal 0&, hashLen, 0
-    ReDim hashBytes(hashLen - 1)
-
-    CryptGetHashParam hHash, HP_HASHVAL, hashBytes(0), hashLen, 0
-
-    For i = 0 To UBound(hashBytes)
+    
+    ' Obliczamy hash
+    hashBytes = enc.ComputeHash_2(bytes)
+    
+    ' Zamiana na HEX
+    Sha256Hash = ""
+    For i = LBound(hashBytes) To UBound(hashBytes)
         Sha256Hash = Sha256Hash & LCase(Right("0" & Hex(hashBytes(i)), 2))
     Next
-
-Cleanup:
-    If hHash <> 0 Then CryptDestroyHash hHash
-    If hProv <> 0 Then CryptReleaseContext hProv, 0
 End Function
 
 Private Function CreateSalt(ByVal length As Long) As String
@@ -111,14 +66,20 @@ Private Function CreateSalt(ByVal length As Long) As String
     Next
 End Function
 
-Public Function VerifyPassword(ByVal inputPassword As String, _
-                               ByVal storedValue As String) As Boolean
-
+Public Function VerifyPassword(ByVal inputPassword As String, ByVal storedValue As String) As Boolean
     Dim parts() As String
     parts = Split(storedValue, ":")
 
-    If UBound(parts) <> 2 Then Exit Function
-    If parts(0) <> "SHA256" Then Exit Function
+    ' Sprawdzenie poprawnego formatu
+    If UBound(parts) <> 2 Then
+        VerifyPassword = False
+        Exit Function
+    End If
+
+    If parts(0) <> "SHA256" Then
+        VerifyPassword = False
+        Exit Function
+    End If
 
     Dim salt As String
     salt = parts(1)
@@ -126,6 +87,6 @@ Public Function VerifyPassword(ByVal inputPassword As String, _
     Dim expectedHash As String
     expectedHash = parts(2)
 
-    VerifyPassword = _
-        (Sha256Hash(inputPassword & salt) = expectedHash)
+    ' Porównanie hashy w tej samej formie (ma³e litery)
+    VerifyPassword = (LCase(Sha256Hash(inputPassword & salt)) = LCase(expectedHash))
 End Function

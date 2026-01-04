@@ -18,9 +18,17 @@ Private Sub btnRegister_Click()
         Exit Sub
     End If
     
+    If Not IsLoginAvailable() Then
+        MsgBox "Login ju¿ istnieje", vbCritical, "B³¹d walidacji"
+        Exit Sub
+    End If
+    
     Call HashUserPassword(newUser)
     Call InsertUser(newUser)
     MsgBox "U¿ytkownik utworzony", vbOKOnly, "Sukces"
+    
+    DoCmd.Close acForm, Me.Name, acSaveNo
+    DoCmd.OpenForm "LoginView"
 End Sub
 
 Private Function CreateUser() As user
@@ -58,3 +66,26 @@ Private Sub InsertUser(ByRef user As user)
     
     Set db = Nothing
 End Sub
+
+Private Function IsLoginAvailable() As Boolean
+    Dim db As DAO.Database
+    Dim rs As DAO.Recordset
+    Dim loginToCheck As String
+    
+    loginToCheck = Trim(Me.txtLogin.value)
+    
+    Set db = CurrentDb
+    Set rs = db.OpenRecordset("Uzytkownicy", dbOpenDynaset)
+    
+    rs.Filter = "NazwaUzytkownika = '" & Replace(loginToCheck, "'", "''") & "'"
+    
+    If rs.RecordCount > 0 Then
+        IsLoginAvailable = False
+    Else
+        IsLoginAvailable = True
+    End If
+    
+    rs.Close
+    Set rs = Nothing
+    Set db = Nothing
+End Function
