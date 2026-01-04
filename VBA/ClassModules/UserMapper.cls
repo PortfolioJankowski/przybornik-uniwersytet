@@ -11,21 +11,21 @@ Option Compare Database
 Option Explicit
 Implements IEntityMapper
 
-Public Function Map(rs As DAO.Recordset) As USer
+Public Function Map(rs As DAO.Recordset) As user
     Set Map = IEntityMapper_Map(rs)
 End Function
 
-Public Function ToInsertSql(u As USer) As String
+Public Function ToInsertSql(u As user) As String
     ToInsertSql = BuildInsertSql(u)
 End Function
 
-Public Function ToUpdateSql(u As USer) As String
+Public Function ToUpdateSql(u As user) As String
     ToUpdateSql = BuildUpdateSql(u)
 End Function
 
 
 Private Function IEntityMapper_Map(rs As DAO.Recordset) As Object
-    Dim u As New USer
+    Dim u As New user
 
     u.Id = rs!Id
     u.NazwaUzytkownika = rs!NazwaUzytkownika
@@ -39,22 +39,22 @@ Private Function IEntityMapper_Map(rs As DAO.Recordset) As Object
 End Function
 
 Private Function IEntityMapper_ToSqlInsert(entity As Object) As String
-    Dim u As USer
+    Dim u As user
     Set u = entity
 
     IEntityMapper_ToSqlInsert = BuildInsertSql(u)
 End Function
 
 Private Function IEntityMapper_ToSqlUpdate(entity As Object) As String
-    Dim u As USer
+    Dim u As user
     Set u = entity
 
     IEntityMapper_ToSqlUpdate = BuildUpdateSql(u)
 End Function
 
-Private Function BuildInsertSql(u As USer) As String
+Private Function BuildInsertSql(u As user) As String
     BuildInsertSql = _
-        "INSERT INTO tblUsers (" & _
+        "INSERT INTO Uzytkownicy (" & _
         "NazwaUzytkownika, HashHaslo, Imie, Nazwisko, AdresEmail, Tytul" & _
         ") VALUES (" & _
         SqlStringService.GetSqlString(u.NazwaUzytkownika) & "," & _
@@ -65,7 +65,7 @@ Private Function BuildInsertSql(u As USer) As String
         SqlStringService.GetSqlString(u.Tytul) & ")"
 End Function
 
-Private Function BuildUpdateSql(u As USer) As String
+Private Function BuildUpdateSql(u As user) As String
     BuildUpdateSql = _
         "UPDATE tblUsers SET " & _
         "NazwaUzytkownika=" & SqlStringService.GetSqlString(u.NazwaUzytkownika) & ", " & _
