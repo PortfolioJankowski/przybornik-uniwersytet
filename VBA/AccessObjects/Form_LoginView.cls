@@ -21,8 +21,11 @@ Private Sub btnLogin_Click()
     InitializeSession
     PublishLoginEvent
     NavigateToLanding
-    Exit Sub
+    DoCmd.OpenForm "EventDispatcher", , , , , acHidden
 
+    Exit Sub
+    
+    
 EH:
     ShowError "Wyst¹pi³ nieoczekiwany b³¹d"
 End Sub
@@ -79,11 +82,11 @@ Private Sub InitializeSession()
     Set App = New AppContext
     Set App.CurrentUser = ORM.CreateUserFromRecord(mUserRecordset)
     Set App.db = CurrentDb
+    Set App.Logger = New Logger
 End Sub
 
 Private Sub PublishLoginEvent()
     Dim e As Zdarzenie
-    e.EventDate = Now
     e.Name = EventMdl.UserLoggedInEvent
     e.Message = "Pomyœlne logowanie"
 

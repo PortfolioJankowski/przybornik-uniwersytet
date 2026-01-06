@@ -25,7 +25,7 @@ Private Sub btnRegister_Click()
     
     Call HashUserPassword(newUser)
     Call InsertUser(newUser)
-    Call UpdateConfigurationTable
+    Call ChangeConfiguration
     
     MsgBox "U¿ytkownik utworzony", vbOKOnly, "Sukces"
     
@@ -92,13 +92,10 @@ Private Function IsLoginAvailable() As Boolean
     Set db = Nothing
 End Function
 
-Public Sub UpdateConfigurationTable()
-    Dim db As DAO.database
-    Dim rs As DAO.Recordset
-    
-    Set db = CurrentDb
-    Set rs = db.OpenRecordset("SELECT * FROM Konfiguracja WHERE Wlasciwosc = '" & Consts.CONFIG_FIRST_TIME_LOGIN & "'", dbOpenDynaset)
-    rs.Edit
-    rs!Wartosc = "False"
-    rs.Update
+Private Sub ChangeConfiguration()
+     Dim rs As Recordset
+            Set rs = CurrentDb.OpenRecordset("SELECT * FROM Konfiguracja WHERE Wlasciwosc = '" & Consts.CONFIG_FIRST_TIME_LOGIN & "'", dbOpenDynaset)
+                rs.Edit
+                rs!Wartosc = "False"
+                rs.Update
 End Sub

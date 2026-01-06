@@ -3,7 +3,6 @@ Option Compare Database
 Option Explicit
 
 Public Type Zdarzenie
-     EventDate As Date
      Name As String
      Message As String
      IsProcessed As Boolean
@@ -13,4 +12,11 @@ End Type
 Public Type LoginValidationDto
     UserRecordset As Recordset
     DoesUserExist As Boolean
+End Type
+
+Public Type wpis
+    LogDate As Date
+    ErrorNumber As Integer
+    Description As String
+    CallStac As String
 End Type

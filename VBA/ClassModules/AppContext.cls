@@ -11,3 +11,4 @@ Option Compare Database
 
 Public CurrentUser As user
 Public db As database
+Public Logger As Logger
