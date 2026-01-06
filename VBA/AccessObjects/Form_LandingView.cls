@@ -10,6 +10,9 @@ Attribute VB_Exposed = False
 Option Compare Database
 
 Private Sub Form_Load()
+If App Is Nothing Then
+    Exit Sub
+End If
     With Me
         .txtName.value = App.CurrentUser.Imie
         .txtDate.value = "Dzisiaj jest " & CStr(Date)

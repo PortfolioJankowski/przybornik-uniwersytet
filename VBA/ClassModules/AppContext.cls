@@ -10,3 +10,4 @@ Attribute VB_Exposed = False
 Option Compare Database
 
 Public CurrentUser As user
+Public db As database

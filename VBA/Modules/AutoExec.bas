@@ -4,7 +4,7 @@ Option Explicit
 
 
 Public Sub AutoExec()
-    Dim db As DAO.Database
+    Dim db As DAO.database
     Dim rs As DAO.Recordset
     
     Set db = CurrentDb

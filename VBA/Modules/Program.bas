@@ -5,4 +5,6 @@ Option Explicit
 Public App As AppContext
 
 
+Public Sub main()
 
+End Sub

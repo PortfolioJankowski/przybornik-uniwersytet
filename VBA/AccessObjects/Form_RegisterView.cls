@@ -61,7 +61,7 @@ Private Sub InsertUser(ByRef user As user)
     
     query = ORM.ToInsertSql(user)
     
-    Dim db As DAO.Database
+    Dim db As DAO.database
     Set db = CurrentDb
     
     db.Execute query, dbFailOnError
@@ -70,7 +70,7 @@ Private Sub InsertUser(ByRef user As user)
 End Sub
 
 Private Function IsLoginAvailable() As Boolean
-    Dim db As DAO.Database
+    Dim db As DAO.database
     Dim rs As DAO.Recordset
     Dim loginToCheck As String
     
@@ -93,7 +93,7 @@ Private Function IsLoginAvailable() As Boolean
 End Function
 
 Public Sub UpdateConfigurationTable()
-    Dim db As DAO.Database
+    Dim db As DAO.database
     Dim rs As DAO.Recordset
     
     Set db = CurrentDb

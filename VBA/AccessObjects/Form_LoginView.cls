@@ -9,61 +9,97 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Compare Database
 Option Explicit
-
+Private mUserRecordset As DAO.Recordset
 Private Sub btnLogin_Click()
-    Dim cryptoService As New cryptoService
-    Me.txtError.Visible = False
-    
+    On Error GoTo EH
+
+    ClearError
+
+    If Not ValidateInput() Then Exit Sub
+    If Not TryAuthenticate() Then Exit Sub
+
+    InitializeSession
+    PublishLoginEvent
+    NavigateToLanding
+    Exit Sub
+
+EH:
+    ShowError "Wyst¹pi³ nieoczekiwany b³¹d"
+End Sub
+
+Private Function ValidateInput() As Boolean
     If IsNullOrWhiteSpace(Me.txtLogin) Then
-        Me.txtError = "Nieprawid³owy login"
-        Me.txtError.Visible = True
-        Exit Sub
+        ShowError "Nieprawid³owy login"
     ElseIf IsNullOrWhiteSpace(Me.txtPassword) Then
-        Me.txtError = "Uzupe³nij has³o"
-        Me.txtError.Visible = True
-        Exit Sub
+        ShowError "Uzupe³nij has³o"
     ElseIf Len(Me.txtPassword.value) < 8 Then
-        Me.txtError = "Podano za krótkie has³o"
-        Me.txtError.Visible = True
-        Exit Sub
-    
-    End If
-    
-    
-    Dim storedHash As String
-    Dim rs As Recordset
-    Dim db As Database
-    Set db = CurrentDb
-    
-    Dim query As String
-    query = "SELECT * FROM Uzytkownicy " & _
-    "WHERE NazwaUzytkownika = '" & Replace(Me.txtLogin.value, "'", "''") & "'"
-    Set rs = db.OpenRecordset(query, dbOpenSnapshot)
-    
-    If rs.RecordCount = 0 Then
-        Me.txtError = "Nie znaleziono podanego loginu"
-        Me.txtError.Visible = True
-        Exit Sub
-    End If
-    
-    If Not cryptoService.VerifyPassword(txtPassword, rs!HashHaslo) Then
-        Me.txtError = "Nieprawid³owe has³o"
-        Me.txtError.Visible = True
-        Exit Sub
+        ShowError "Podano za krótkie has³o"
+    Else
+        ValidateInput = True
+        Exit Function
     End If
 
-   
-    
+    ValidateInput = False
+End Function
+
+Private Function TryAuthenticate() As Boolean
+    Dim rs As DAO.Recordset
+    Set rs = GetUserRecordset(Me.txtLogin.value)
+
+    If rs.EOF Then
+        ShowError "Nie znaleziono podanego loginu"
+        Exit Function
+    End If
+
+    If Not VerifyPassword(rs) Then
+        ShowError "Nieprawid³owe has³o"
+        Exit Function
+    End If
+
+    Set mUserRecordset = rs
+    TryAuthenticate = True
+End Function
+
+Private Function GetUserRecordset(login As String) As DAO.Recordset
+    Dim sql As String
+    sql = "SELECT * FROM Uzytkownicy WHERE NazwaUzytkownika = '" & _
+          Replace(login, "'", "''") & "'"
+
+    Set GetUserRecordset = CurrentDb.OpenRecordset(sql, dbOpenSnapshot)
+End Function
+
+Private Function VerifyPassword(rs As DAO.Recordset) As Boolean
+    Dim crypto As New cryptoService
+    VerifyPassword = crypto.VerifyPassword(Me.txtPassword.value, rs!HashHaslo)
+End Function
+
+Private Sub InitializeSession()
     Dim ORM As New UserMapper
+
     Set App = New AppContext
-    Set App.CurrentUser = ORM.CreateUserFromRecord(rs)
-    
-     Set db = Nothing
-    Set rs = Nothing
-    
+    Set App.CurrentUser = ORM.CreateUserFromRecord(mUserRecordset)
+    Set App.db = CurrentDb
+End Sub
+
+Private Sub PublishLoginEvent()
+    Dim e As Zdarzenie
+    e.EventDate = Now
+    e.Name = EventMdl.UserLoggedInEvent
+    e.Message = "Pomyœlne logowanie"
+
+    EventGateway e
+End Sub
+
+Private Sub ShowError(msg As String)
+    Me.txtError = msg
+    Me.txtError.Visible = True
+End Sub
+
+Private Sub ClearError()
+    Me.txtError.Visible = False
+End Sub
+
+Private Sub NavigateToLanding()
     DoCmd.Close acForm, Me.Name, acSaveNo
     DoCmd.OpenForm "LandingView"
 End Sub
-
-
-
