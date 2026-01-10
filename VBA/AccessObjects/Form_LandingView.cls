@@ -9,6 +9,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Compare Database
 
+Private Sub btnPrzedmioty_Click()
+    DoCmd.OpenForm "PrzedmiotyView"
+End Sub
+
 Private Sub Form_Load()
 If App Is Nothing Then
     Exit Sub
