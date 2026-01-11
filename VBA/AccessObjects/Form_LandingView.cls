@@ -9,6 +9,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Compare Database
 
+Private Sub btnDirections_Click()
+    DoCmd.OpenForm "KierunkiView"
+End Sub
+
 Private Sub btnPrzedmioty_Click()
     DoCmd.OpenForm "PrzedmiotyView"
 End Sub
