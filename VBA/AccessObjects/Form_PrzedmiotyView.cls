@@ -18,7 +18,7 @@ Private Enum SubjectCols
     Name = 1
     desc = 2
     SylabusId = 3
-    CycleId = 4
+    cycleId = 4
 End Enum
 
 Private Sub HandleSubjectSelection()
@@ -28,7 +28,54 @@ Private Sub HandleSubjectSelection()
     FillEditTab
     HandleGotoActivation
     HandleSubformsVisiblity
+    ChangeClassesVisibility
+    LoadClasses
 End Sub
+
+Private Sub ChangeClassesVisibility()
+    Dim visibility As Boolean
+    visibility = (idCycle <> 0)
+    With Me
+        .lbxClasses.Visible = visibility
+        .tabClasses.Visible = visibility
+        .btnDeleteClass.Visible = visibility
+        .lblCycle.Visible = visibility
+        .lblCycle2.Visible = visibility
+        .imgCycle.Visible = visibility
+    End With
+End Sub
+Private Sub LoadClasses()
+    If (idCycle = 0) Then Exit Sub
+    
+    Dim rsClasses As Recordset
+    Set rsClasses = CurrentDb.OpenRecordset(SqlStringService.GetClassesByCycleId(idCycle), dbOpenSnapshot)
+    
+    If rsClasses.EOF Or rsClasses.BOF Then
+        Exit Sub
+    End If
+    
+
+    lbxClasses.RowSourceType = "Value List"
+    lbxClasses.ColumnCount = 2
+    lbxClasses.BoundColumn = 1
+    lbxClasses.ColumnWidths = "0cm;5cm"
+    
+    lbxClasses.RowSource = ""
+    
+    Dim header As String
+    While Not rsClasses.EOF
+        header = rsClasses!Kolejnosc & ". " & rsClasses!Tytul
+        
+       
+        lbxClasses.AddItem rsClasses!Identyfikator & ";" & header
+        
+        rsClasses.MoveNext
+    Wend
+    
+    rsClasses.Close
+    Set rsClasses = Nothing
+End Sub
+
 
 Private Sub FillEditTab()
     tabCtrl.value = 1
@@ -36,7 +83,7 @@ Private Sub FillEditTab()
     txtEditName.value = Me.lbxSubjects.Column(SubjectCols.Name)
     cmbEditSylabus.value = Me.lbxSubjects.Column(SubjectCols.SylabusId)
     idSylabus = CLng(Me.lbxSubjects.Column(SubjectCols.SylabusId))
-    idCycle = CLng(Me.lbxSubjects.Column(SubjectCols.CycleId))
+    idCycle = CLng(Me.lbxSubjects.Column(SubjectCols.cycleId))
 End Sub
 
 Private Sub ClearEditForm()
@@ -61,10 +108,7 @@ End Sub
 
 Private Sub HandleSubformsVisiblity()
     If IsNull(idCycle) Then Exit Sub
-    
-
-    
-    
+     
 End Sub
 
 Private Sub btnAdd_Click()
@@ -190,6 +234,7 @@ Private Sub tabCtrl_Change()
         HandleGotoActivation
         HandleSubformsVisiblity
         ClearEditForm
+        ChangeClassesVisibility
     End If
 End Sub
 

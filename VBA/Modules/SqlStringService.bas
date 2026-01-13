@@ -9,3 +9,7 @@ Public Function GetSqlString(v As Variant) As String
         GetSqlString = "'" & Replace(v, "'", "''") & "'"
     End If
 End Function
+
+Public Function GetClassesByCycleId(cycleId As Long) As String
+    GetClassesByCycleId = "SELECT * FROM Zajecia WHERE CyklDydaktycznyId = " & CStr(cycleId)
+End Function

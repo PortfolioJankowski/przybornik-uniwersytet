@@ -15,3 +15,6 @@ Public Const PrzedmiotyTable As String = "Przedmioty"
 'Pomocnicze
 Public Const AddSubjectTabIndex As Integer = 0
 Public Const EditSubjectTabIndex As Integer = 1
+
+
+
