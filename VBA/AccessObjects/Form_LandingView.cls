@@ -17,6 +17,10 @@ Private Sub btnPrzedmioty_Click()
     DoCmd.OpenForm "PrzedmiotyView"
 End Sub
 
+Private Sub Command14_Click()
+    DoCmd.OpenForm Consts.SylabusView
+End Sub
+
 Private Sub Form_Load()
 If App Is Nothing Then
     Exit Sub

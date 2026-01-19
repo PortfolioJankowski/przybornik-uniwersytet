@@ -4,6 +4,8 @@ Option Explicit
 
 Public Const UserLoggedInEvent = "Zalogowano-uzytkownika"
 Public Const UserRegisterdedEvent = "Zarejestrowano-uzytkownika"
+Public Const SubjectAddedEvent = "Dodano-przedmiot"
+Public Const CycleAddedEvent = "Dodano-cykl-dydaktyczny"
 
 Public Sub EventGateway(toSend As Zdarzenie)
     Dim rs As Recordset

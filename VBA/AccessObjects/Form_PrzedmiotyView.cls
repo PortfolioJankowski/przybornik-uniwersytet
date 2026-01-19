@@ -117,7 +117,7 @@ Private Sub HandleSubformsVisiblity()
     Dim sylabusVis As Boolean: sylabusVis = (idSylabus <> 0)
     
     srSylabusy.Visible = sylabusVis
-    srSylabusy_Label.Visible = sylabusVis
+
     
     lblCycle.Visible = cycleVis
     lblCycle2.Visible = cycleVis
@@ -129,7 +129,7 @@ Private Sub HandleSubformsVisiblity()
 End Sub
 
 Private Sub btnAdd_Click()
-    
+    On Error GoTo Catch
     Dim db As DAO.database
     Dim rsCykl As DAO.Recordset
     Dim rsPrzedmiot As DAO.Recordset
@@ -158,6 +158,14 @@ Private Sub btnAdd_Click()
         rsCykl!Nazwa = Me.txtAddName
     rsCykl.Update
 
+    Dim addCycleEvent As Zdarzenie
+    With addCycleEvent
+        .IsProcessed = True
+        .Message = "Dodano cykl dydaktyczny o nazwie " & Me.txtAddName.value
+        .ProcessingDate = DateTime.Now
+    EventGateway e
+    End With
+    
     ' Pobranie ID nowo dodanego cyklu
     rsCykl.Bookmark = rsCykl.LastModified
     lngCyklID = rsCykl!Id
@@ -198,6 +206,14 @@ Private Sub btnAdd_Click()
         End If
     Next i
     
+    Dim addSubjectEvent As Zdarzenie
+    With addSubjectEvent
+        .IsProcessed = True
+        .Message = "Dodano przedmiot " & txtAddName
+        .Name = EventMdl.CycleAddedEvent
+        .ProcessingDate = DateTime.Now
+    End With
+    EventGateway addSubjectEvent
     
     rsPrzedmiot.Close
     Set rsPrzedmiot = Nothing
@@ -205,6 +221,13 @@ Private Sub btnAdd_Click()
     
     MsgBox "Przedmiot zosta³ dodany." & vbNewLine & "Mo¿esz przejsæ do tworzenia cyklu dydaktycznego", vbInformation
 
+Catch:
+    Dim wpis As wpis
+    wpis.CallStac = Err.Source
+    wpis.Description = "B³¹d podczas dodawania przedmiotu " & Me.txtAddName
+    wpis.ErrorNumber = Err.Number
+    wpis.LogDate = DateTime.Now
+    App.Logger.Add wpis
 End Sub
 
 Private Sub ClearEditClassForm()
