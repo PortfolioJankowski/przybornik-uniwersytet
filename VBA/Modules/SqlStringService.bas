@@ -13,3 +13,7 @@ End Function
 Public Function GetClassesByCycleId(cycleId As Long) As String
     GetClassesByCycleId = "SELECT * FROM Zajecia WHERE CyklDydaktycznyId = " & CStr(cycleId)
 End Function
+
+Public Function DeleteClassById(classID As Long) As String
+    DeleteClassById = "DELETE FROM Zajecia WHERE Identyfikator =" & CStr(classID)
+End Function

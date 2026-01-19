@@ -7,6 +7,7 @@ Public Const CONFIG_FIRST_TIME_LOGIN As String = "PierwszyRaz"
 
 'Widoki
 Public Const SylabusView As String = "SylabusyView"
+Public Const ClassView As String = "ZajeciaView"
 
 'Tabele
 Public Const CyklDydaktycznyTable As String = "CyklDydaktyczny"

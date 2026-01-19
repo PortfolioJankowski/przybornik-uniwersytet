@@ -12,6 +12,7 @@ Option Explicit
 Dim idSubject As Long
 Dim idSylabus As Long
 Dim idCycle As Long
+Dim idClass As Long
 
 Private Enum SubjectCols
     Id = 0
@@ -42,10 +43,23 @@ Private Sub ChangeClassesVisibility()
         .lblCycle.Visible = visibility
         .lblCycle2.Visible = visibility
         .imgCycle.Visible = visibility
+        .btnGoToClasses.Visible = visibility
     End With
 End Sub
 Private Sub LoadClasses()
-    If (idCycle = 0) Then Exit Sub
+    If (idCycle = 0) Then
+        lbxClasses.RowSource = ""
+        lbxClasses.AddItem ";"
+        Me.Refresh
+        Exit Sub
+    End If
+    
+    lbxClasses.RowSourceType = "Value List"
+    lbxClasses.ColumnCount = 2
+    lbxClasses.BoundColumn = 1
+    lbxClasses.ColumnWidths = "0cm;5cm"
+    
+    lbxClasses.RowSource = ""
     
     Dim rsClasses As Recordset
     Set rsClasses = CurrentDb.OpenRecordset(SqlStringService.GetClassesByCycleId(idCycle), dbOpenSnapshot)
@@ -53,14 +67,6 @@ Private Sub LoadClasses()
     If rsClasses.EOF Or rsClasses.BOF Then
         Exit Sub
     End If
-    
-
-    lbxClasses.RowSourceType = "Value List"
-    lbxClasses.ColumnCount = 2
-    lbxClasses.BoundColumn = 1
-    lbxClasses.ColumnWidths = "0cm;5cm"
-    
-    lbxClasses.RowSource = ""
     
     Dim header As String
     While Not rsClasses.EOF
@@ -103,12 +109,23 @@ Private Sub ClearAddForm()
 End Sub
 
 Private Sub HandleGotoActivation()
-    btnGoToSylabus.Enabled = (idSylabus <> 0)
+    btnGoToSylabus.enabled = (idSylabus <> 0)
 End Sub
 
 Private Sub HandleSubformsVisiblity()
-    If IsNull(idCycle) Then Exit Sub
-     
+    Dim cycleVis As Boolean: cycleVis = (idCycle <> 0)
+    Dim sylabusVis As Boolean: sylabusVis = (idSylabus <> 0)
+    
+    srSylabusy.Visible = sylabusVis
+    srSylabusy_Label.Visible = sylabusVis
+    
+    lblCycle.Visible = cycleVis
+    lblCycle2.Visible = cycleVis
+    lbxClasses.Visible = cycleVis
+    tabClasses.Visible = cycleVis
+    imgCycle.Visible = cycleVis
+    btnDeleteClass.Visible = cycleVis
+    btnGoToSylabus.Visible = sylabusVis
 End Sub
 
 Private Sub btnAdd_Click()
@@ -135,10 +152,6 @@ Private Sub btnAdd_Click()
     End If
 
     Set db = CurrentDb
-
-    ' =========================
-    ' Dodaj cykl dydaktyczny
-    ' =========================
     Set rsCykl = db.OpenRecordset(Consts.CyklDydaktycznyTable, dbOpenDynaset)
 
     rsCykl.AddNew
@@ -151,17 +164,13 @@ Private Sub btnAdd_Click()
 
     rsCykl.Close
     Set rsCykl = Nothing
-
-    ' =========================
-    ' Dodaj przedmiot
-    ' =========================
     Set rsPrzedmiot = db.OpenRecordset(Consts.PrzedmiotyTable, dbOpenDynaset)
 
     rsPrzedmiot.AddNew
         rsPrzedmiot!Nazwa = Me.txtAddName
         rsPrzedmiot!Opis = Nz(Me.txtAddDesc, "")
         rsPrzedmiot!SylabusId = CInt(Me.cmbAddSylabus.value)
-        rsPrzedmiot!CyklDydaktycznyID = lngCyklID
+        rsPrzedmiot!CyklDydaktycznyId = lngCyklID
     rsPrzedmiot.Update
 
     'Refresh form
@@ -198,10 +207,90 @@ Private Sub btnAdd_Click()
 
 End Sub
 
-'============== Event Handlers =========================
+Private Sub ClearEditClassForm()
+    With Me
+        .cmbEditOrder.value = ""
+        .txtEditClassDesc.value = ""
+        .txtEditClassTitle.value = ""
+    End With
+End Sub
+Private Sub HandleDeleteClassBtnActivation()
+    Dim enabled As Boolean
+    enabled = idClass <> 0
+    Me.btnDeleteClass.enabled = enabled
+End Sub
 
+
+
+
+
+
+'============== Event Handlers =========================
+'Subject Removing
+Private Sub btnDelete_Click()
+
+End Sub
+
+'Class Removing
+Private Sub btnDeleteClass_Click()
+    If (idClass = 0) Then Exit Sub
+    
+    Dim confirmation As String
+    confirmation = MsgBox("Czy na pewno chcesz usun¹æ wybrane zajêcia?", vbYesNo)
+    If Not (confirmation = vbYes) Then Exit Sub
+    
+    Dim query As String: query = SqlStringService.DeleteClassById(idClass)
+    On Error GoTo errorhandler
+    CurrentDb.Execute query
+    HandleSubjectSelection
+    
+    Exit Sub
+errorhandler:
+    MsgBox "Wystapi³ nieoczekiwany b³¹d", vbCritical
+End Sub
+
+Private Sub btnAddClass_Click()
+
+End Sub
+
+'Subject Editing
 Private Sub btnEdit_Click()
     'TODO
+End Sub
+
+Private Sub btnGoToClasses_Click()
+ If idClass = 0 Then
+        DoCmd.OpenForm Consts.ClassView, , , , acFormAdd
+    Else
+        DoCmd.OpenForm Consts.ClassView, , , _
+            "Identyfikator=" & idClass
+    End If
+End Sub
+
+'Tab changed
+Private Sub tabClasses_Change()
+    With tabClasses
+        Dim addIndex As Integer: addIndex = 0
+        If tabClasses.value = addIndex Then
+            'remove selection
+            idClass = 0
+            Dim i As Integer
+            For i = 0 To Me.lbxClasses.ListCount - 1
+                Me.lbxClasses.Selected(i) = False
+            Next i
+            'clear edit class
+            ClearEditClassForm
+            HandleDeleteClassBtnActivation
+        End If
+    End With
+End Sub
+
+Private Sub lbxClasses_Click()
+    With Me.lbxClasses
+        If IsNull(.value) Then Exit Sub
+        idClass = CLng(.value)
+        HandleDeleteClassBtnActivation
+    End With
 End Sub
 
 Private Sub btnGoToSylabus_Click()
