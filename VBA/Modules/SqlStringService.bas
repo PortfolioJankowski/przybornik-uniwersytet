@@ -21,3 +21,11 @@ End Function
 Public Function GetClassById(classId As Long) As String
     GetClassById = "SELECT * FROM Zajecia WHERE Identyfikator=" & CStr(classId)
 End Function
+
+Public Function DeleteSubjectById(subjectId As Long) As String
+    DeleteSubjectById = "DELETE FROM Przedmioty WHERE Identyfikator=" & CStr(subjectId)
+End Function
+
+Public Function GetSubjectById(subjectId As Long) As String
+    GetSubjectById = "Select Nazwa FROM Przedmioty where Identyfikator =" & CStr(subjectId)
+End Function

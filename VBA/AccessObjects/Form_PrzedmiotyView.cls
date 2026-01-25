@@ -85,11 +85,11 @@ End Sub
 
 Private Sub FillEditTab()
     tabCtrl.value = 1
-    txtEditDesc.value = Me.lbxSubjects.Column(SubjectCols.desc)
-    txtEditName.value = Me.lbxSubjects.Column(SubjectCols.Name)
-    cmbEditSylabus.value = Me.lbxSubjects.Column(SubjectCols.SylabusId)
-    idSylabus = CLng(Me.lbxSubjects.Column(SubjectCols.SylabusId))
-    idCycle = CLng(Me.lbxSubjects.Column(SubjectCols.cycleId))
+    txtEditDesc.value = Me.lbxSubjects.Column(2)
+    txtEditName.value = Me.lbxSubjects.Column(1)
+    cmbEditSylabus.value = Me.lbxSubjects.Column(3)
+    idSylabus = CLng(Me.lbxSubjects.Column(3))
+    idCycle = CLng(Me.lbxSubjects.Column(4))
 End Sub
 
 Private Sub ClearEditForm()
@@ -251,8 +251,56 @@ End Sub
 '============== Event Handlers =========================
 'Subject Removing
 Private Sub btnDelete_Click()
+    If idSubject = 0 Then Exit Sub
 
+    On Error GoTo catch
+
+    Dim query As String
+    query = DeleteSubjectById(idSubject)
+
+    Dim rs As DAO.Recordset
+    Set rs = CurrentDb.OpenRecordset( _
+        SqlStringService.GetSubjectById(idSubject), _
+        dbOpenSnapshot)
+
+    If rs.EOF Then
+        err.Raise 3021, , "Nie znaleziono przedmiotu"
+    End If
+
+    Dim subjectName As String
+    subjectName = rs!Nazwa
+
+    rs.Close
+    Set rs = Nothing
+
+    CurrentDb.Execute query, dbFailOnError
+
+    Dim e As Zdarzenie
+    e.Name = EventMdl.SubjectDeletedEvent
+    e.Message = "Usuniêto przedmiot " & subjectName
+    e.IsProcessed = True
+    e.ProcessingDate = Now
+
+    EventGateway e
+    
+    If Me.lbxSubjects.ListCount > 0 Then
+        Me.lbxSubjects.Selected(0) = True
+        HandleSubjectSelection
+    End If
+
+    MsgBox "Pomyœlnie usuniêto przedmiot"
+    DoCmd.Close acForm, Consts.SubjectView
+    Exit Sub
+
+catch:
+    Dim log As wpis
+    log.Description = err.Description
+    log.ErrorNumber = err.Number
+    App.Logger.Add log
+
+    MsgBox "Nie uda³o siê usun¹æ przedmiotu"
 End Sub
+
 
 'Class Removing
 Private Sub btnDeleteClass_Click()

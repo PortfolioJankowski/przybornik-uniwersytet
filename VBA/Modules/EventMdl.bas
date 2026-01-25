@@ -7,11 +7,12 @@ Public Const UserRegisterdedEvent = "Zarejestrowano-uzytkownika"
 Public Const SubjectAddedEvent = "Dodano-przedmiot"
 Public Const CycleAddedEvent = "Dodano-cykl-dydaktyczny"
 Public Const PresentationDownloadedEvent = "Pobrano-prezentacje"
+Public Const SubjectDeletedEvent = "Usuniêto-przedmiot"
 
 Public Sub EventGateway(toSend As Zdarzenie)
     Dim rs As Recordset
     
-    Set rs = App.db.OpenRecordset("Zdarzenia", dbOpenDynaset)
+    Set rs = CurrentDb.OpenRecordset("Zdarzenia", dbOpenDynaset)
     With rs
         .AddNew
             rs!Data = Now
