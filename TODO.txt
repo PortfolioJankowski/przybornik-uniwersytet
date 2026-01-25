@@ -1,4 +1,4 @@
-1. Implementacja OnCLick listy Zajęć
+
 2. Implementacja dodawania/edycji zajęć
 3. Mechnizm tworzenia grup zajęciowych
 4. Masowe dodawanie studentów (mass upload z excela)

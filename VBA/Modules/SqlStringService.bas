@@ -27,5 +27,5 @@ Public Function DeleteSubjectById(subjectId As Long) As String
 End Function
 
 Public Function GetSubjectById(subjectId As Long) As String
-    GetSubjectById = "Select Nazwa FROM Przedmioty where Identyfikator =" & CStr(subjectId)
+    GetSubjectById = "Select * FROM Przedmioty where Identyfikator =" & CStr(subjectId)
 End Function

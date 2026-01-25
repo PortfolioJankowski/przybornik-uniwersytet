@@ -336,8 +336,7 @@ Private Sub btnDownloadPres_Click()
         saveAsPath = .SelectedItems(1)
     End With
     
-    
-    
+    If saveAsPath = "" Then Exit Sub
     Dim fileRepo As New FileRepository
     fileRepo.Init "Zajecia"
     fileRepo.PobierzPlikZBazy idClass, Prezentacja, saveAsPath
@@ -355,7 +354,7 @@ catch:
     If (err.Number = 3839) Then
         MsgBox "W wybranej lokalizacji znajduje siê ju¿ pobierany plik!"
         Dim fileExists As wpis
-        fileExists.Description "Pobierany plik ju¿ istnieje w wybranej lokalizacji"
+        fileExists.Description = "Pobierany plik ju¿ istnieje w wybranej lokalizacji"
         fileExists.LogDate = Now
         App.Logger.Add fileExists
         Exit Sub
@@ -372,8 +371,61 @@ End Sub
 
 'Subject Editing
 Private Sub btnEdit_Click()
-    'TODO
+    On Error GoTo catch
+
+    If idSubject = 0 Then Exit Sub
+
+    ' Walidacja danych
+    If IsNull(Me.txtEditDesc) Or Me.txtEditDesc = "" Then
+        MsgBox "Podaj opis przedmiotu.", vbExclamation
+        Exit Sub
+    End If
+
+    If IsNull(Me.txtEditName) Or Me.txtEditName = "" Then
+        MsgBox "Podaj nazwê przedmiotu.", vbExclamation
+        Exit Sub
+    End If
+    
+    If IsNull(Me.cmbEditSylabus) Or Me.cmbEditSylabus = "" Then
+        MsgBox "Podaj sylabus przedmiotu.", vbExclamation
+        Exit Sub
+    End If
+    
+    Dim rs As DAO.Recordset
+    Set rs = CurrentDb.OpenRecordset(SqlStringService.GetSubjectById(idSubject), dbOpenDynaset)
+    
+    If rs.EOF Then err.Raise 2, , "Brak przedmiotu"
+    rs.Edit
+    rs!Nazwa = Me.txtEditName
+    rs!Opis = Me.txtEditDesc
+    rs!SylabusId = Me.cmbEditSylabus
+    rs.Update
+    
+    rs.Close
+    Set rs = Nothing
+    
+    Dim e As Zdarzenie
+    With e
+        .Name = EventMdl.SubjectEditedEvent
+        .Message = "Edytowano przedmiot " & Me.txtEditName.value
+        .ProcessingDate = Now
+        .IsProcessed = True
+    End With
+    
+    EventGateway e
+    
+    MsgBox "Pomyœlnie edytowano przedmiot"
+    Me.lbxSubjects.Requery
+    
+    Exit Sub
+
+catch:
+    Dim log As wpis
+    log.ErrorNumber = err.Number
+    log.Description = err.Description
+    App.Logger.Add log
 End Sub
+
 
 Private Sub btnGoToClasses_Click()
  If idClass = 0 Then
