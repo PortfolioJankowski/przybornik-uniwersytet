@@ -20,3 +20,8 @@ Public Type wpis
     Description As String
     CallStac As String
 End Type
+
+Public Enum PrzechowywanyPlik
+    Prezentacja = 0
+    Notatki = 1
+End Enum

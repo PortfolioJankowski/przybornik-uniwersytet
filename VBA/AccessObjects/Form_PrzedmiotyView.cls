@@ -129,7 +129,7 @@ Private Sub HandleSubformsVisiblity()
 End Sub
 
 Private Sub btnAdd_Click()
-    On Error GoTo Catch
+    On Error GoTo catch
     Dim db As DAO.database
     Dim rsCykl As DAO.Recordset
     Dim rsPrzedmiot As DAO.Recordset
@@ -163,7 +163,7 @@ Private Sub btnAdd_Click()
         .IsProcessed = True
         .Message = "Dodano cykl dydaktyczny o nazwie " & Me.txtAddName.value
         .ProcessingDate = DateTime.Now
-    EventGateway e
+    EventGateway addCycleEvent
     End With
     
     ' Pobranie ID nowo dodanego cyklu
@@ -221,11 +221,11 @@ Private Sub btnAdd_Click()
     
     MsgBox "Przedmiot zosta³ dodany." & vbNewLine & "Mo¿esz przejsæ do tworzenia cyklu dydaktycznego", vbInformation
 
-Catch:
+catch:
     Dim wpis As wpis
-    wpis.CallStac = Err.Source
+    wpis.CallStac = err.Source
     wpis.Description = "B³¹d podczas dodawania przedmiotu " & Me.txtAddName
-    wpis.ErrorNumber = Err.Number
+    wpis.ErrorNumber = err.Number
     wpis.LogDate = DateTime.Now
     App.Logger.Add wpis
 End Sub
@@ -272,8 +272,54 @@ errorhandler:
     MsgBox "Wystapi³ nieoczekiwany b³¹d", vbCritical
 End Sub
 
-Private Sub btnAddClass_Click()
-
+Private Sub btnDownloadPres_Click()
+    If (idClass = 0) Then Exit Sub
+    
+    Dim fso As FileDialog
+    Set fso = Application.FileDialog(msoFileDialogFolderPicker)
+    On Error GoTo catch
+    
+    Dim saveAsPath As String
+    With fso
+        .Title = "Wybierz lokalizacje zapisu"
+        .InitialFileName = "Prezentacja"
+        .Show
+        
+        saveAsPath = .SelectedItems(1)
+    End With
+    
+    
+    
+    Dim fileRepo As New FileRepository
+    fileRepo.Init "Zajecia"
+    fileRepo.PobierzPlikZBazy idClass, Prezentacja, saveAsPath
+    
+    Dim e As Zdarzenie
+    e.IsProcessed = False
+    e.Name = EventMdl.PresentationDownloadedEvent
+    e.Message = "Pobrano prezentacje dla zajêæ " & idClass
+    EventGateway e
+    
+    MsgBox "Pobrano"
+    Exit Sub
+    
+catch:
+    If (err.Number = 3839) Then
+        MsgBox "W wybranej lokalizacji znajduje siê ju¿ pobierany plik!"
+        Dim fileExists As wpis
+        fileExists.Description "Pobierany plik ju¿ istnieje w wybranej lokalizacji"
+        fileExists.LogDate = Now
+        App.Logger.Add fileExists
+        Exit Sub
+    End If
+    
+    Dim log As wpis
+    log.CallStac = "Id zajecia =" & idClass & " sciezka zapisu=" & saveAsPath
+    log.ErrorNumber = err.Number
+    log.LogDate = Now
+    App.Logger.Add log
+    
+    MsgBox "Wyst¹pi³ nieoczekiwany b³¹d"
 End Sub
 
 'Subject Editing
@@ -313,7 +359,21 @@ Private Sub lbxClasses_Click()
         If IsNull(.value) Then Exit Sub
         idClass = CLng(.value)
         HandleDeleteClassBtnActivation
+        FillEditForm
     End With
+End Sub
+
+Private Sub FillEditForm()
+    tabClasses.value = 1
+    Dim rs As Recordset
+    Set rs = CurrentDb.OpenRecordset(SqlStringService.GetClassById(idClass), dbOpenSnapshot)
+    
+    With rs
+        Me.txtEditClassDesc = rs!Opis
+        Me.txtEditClassTitle = rs!Tytul
+        Me.cmbEditOrder = rs!Kolejnosc
+    End With
+    
 End Sub
 
 Private Sub btnGoToSylabus_Click()

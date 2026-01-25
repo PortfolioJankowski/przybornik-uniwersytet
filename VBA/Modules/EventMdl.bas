@@ -6,6 +6,7 @@ Public Const UserLoggedInEvent = "Zalogowano-uzytkownika"
 Public Const UserRegisterdedEvent = "Zarejestrowano-uzytkownika"
 Public Const SubjectAddedEvent = "Dodano-przedmiot"
 Public Const CycleAddedEvent = "Dodano-cykl-dydaktyczny"
+Public Const PresentationDownloadedEvent = "Pobrano-prezentacje"
 
 Public Sub EventGateway(toSend As Zdarzenie)
     Dim rs As Recordset
@@ -46,7 +47,9 @@ Private Sub DispatchEvent(eventRs As Recordset)
     Select Case eventRs!Nazwa
 
         Case UserRegisterdedEvent
-           
+        Case UserLoggedInEvent
+            Debug.Print "Siema user"
+        
 
     End Select
 
@@ -55,8 +58,8 @@ Private Sub DispatchEvent(eventRs As Recordset)
 
 EH:
     Dim wpis As wpis
-    wpis.ErrorNumber = Err.Number
-    wpis.Description = Err.Description
+    wpis.ErrorNumber = err.Number
+    wpis.Description = err.Description
     wpis.CallStac = "Dispatch event while dispatching " & eventRs!Name
     App.Logger.Add wpis
 End Sub
