@@ -19,7 +19,7 @@ Private Enum SubjectCols
     Name = 1
     desc = 2
     SylabusId = 3
-    cycleId = 4
+    CycleId = 4
 End Enum
 
 Private Sub HandleSubjectSelection()
@@ -248,6 +248,74 @@ End Sub
 
 
 
+Private Sub btnAddClass_Click()
+On Error GoTo catch
+    If idCycle = 0 Then Exit Sub
+    If idSubject = 0 Then Exit Sub
+    
+    If IsNullOrWhiteSpace(txtAddTitle.value) Then
+        err.Raise 2, "B³¹d walidacji", "Tytu³ zajêæ nie mo¿e byæ pusty"
+    End If
+    
+    If IsNullOrWhiteSpace(txtAddDescription.value) Then
+        err.Raise 2, "B³¹d walidacji", "Opis zajêæ nie mo¿e byæ pusty"
+    End If
+    
+    If IsNullOrWhiteSpace(cmbAddOrder.value) Then
+        err.Raise 2, "B³¹d walidacji", "Nale¿y ustaliæ kolejnoœæ zajêæ"
+    End If
+    
+    Dim fileRepo As FileRepository
+    Set fileRepo = New FileRepository
+    fileRepo.Init Consts.ZajeciaTable
+    
+    If (IsNullOrWhiteSpace(txtAddFileName.value) Or IsNullOrWhiteSpace(txtAddNotes.value)) Then
+        Dim odpowiedz As Byte
+        odpowiedz = MsgBox("Dodajesz zajecia bez prezentacji lub notatek. Czy chcesz kontynuowaæ?", vbYesNo)
+        If odpowiedz = vbNo Then
+            Exit Sub
+        End If
+    End If
+    
+    
+    Dim rs As DAO.Recordset
+    Set rs = CurrentDb.OpenRecordset("Zajecia", dbOpenDynaset)
+
+    rs.AddNew
+    rs!CyklDydaktycznyId = idCycle
+    rs!Tytul = txtAddTitle.value
+    rs!Opis = txtAddDescription.value
+    rs!Kolejnosc = cmbAddOrder.value
+    rs.Update
+
+    rs.Bookmark = rs.LastModified
+    Dim idZajecia As Long
+    idZajecia = rs!Identyfikator
+    rs.Close
+    
+    If Not IsNullOrWhiteSpace(txtAddFileName.value) Then
+        fileRepo.WgrajPlikDoBazy idZajecia, Prezentacja, txtAddFileName.value
+    End If
+    
+     If Not IsNullOrWhiteSpace(txtAddNotes.value) Then
+        fileRepo.WgrajPlikDoBazy idZajecia, Prezentacja, txtAddFileName.value
+    End If
+    
+
+    HandleSubjectSelection
+
+    MsgBox "Zajecia zosta³y dodane!"
+    Exit Sub
+catch:
+
+    If err.Number = 2 Then
+        MsgBox err.Description
+    End If
+    
+    Dim log As wpis
+    log.CallStac = "Dodawanie zajêcia dla cyklu " & idCycle
+End Sub
+
 '============== Event Handlers =========================
 'Subject Removing
 Private Sub btnDelete_Click()
@@ -434,6 +502,30 @@ Private Sub btnGoToClasses_Click()
         DoCmd.OpenForm Consts.ClassView, , , _
             "Identyfikator=" & idClass
     End If
+End Sub
+Private Function GetSelectedFileName(Title As String) As String
+ Dim fs As FileDialog
+    Set fs = FileDialog(msoFileDialogOpen)
+    
+    With fs
+        .Title = Title
+        .Show
+        
+        Dim path As String
+        path = .SelectedItems(1)
+
+    End With
+    
+    Set fs = Nothing
+    
+    GetSelectedFileName = path
+End Function
+Private Sub btnUploadNotes_Click()
+    Me.txtAddNotes.value = GetSelectedFileName("Wybierz notatki")
+End Sub
+
+Private Sub btnUploadPres_Click()
+ Me.txtAddFileName.value = GetSelectedFileName("Wybierz prezentacje")
 End Sub
 
 'Tab changed

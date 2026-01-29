@@ -32,7 +32,7 @@ End Function
 
 
 Public Sub PobierzPlikZBazy( _
-        IDRekordu As Long, _
+        ByVal IDRekordu As Long, _
         typPliku As PrzechowywanyPlik, _
         SciezkaFolderu As String)
 
@@ -76,9 +76,9 @@ Public Sub PobierzPlikZBazy( _
 End Sub
 
 Public Sub WgrajPlikDoBazy( _
-        IDRekordu As Long, _
-        typPliku As PrzechowywanyPlik, _
-        SciezkaPliku As String)
+    IDRekordu As Long, _
+    typPliku As PrzechowywanyPlik, _
+    SciezkaPliku As String)
 
     Dim db As DAO.database
     Dim rs As DAO.Recordset
@@ -93,25 +93,28 @@ Public Sub WgrajPlikDoBazy( _
     Set db = CurrentDb
 
     Set rs = db.OpenRecordset( _
-        "SELECT [" & kolumna & "] FROM [" & tableName & "] WHERE ID = " & IDRekordu, _
+        "SELECT * FROM [" & tableName & "] WHERE Identyfikator=" & IDRekordu, _
         dbOpenDynaset)
 
     If rs.EOF Then err.Raise 3021, , "Nie znaleziono rekordu"
 
+    rs.Edit
     Set rsAttach = rs.Fields(kolumna).value
 
-
-    Do While Not rsAttach.EOF
-        rsAttach.Delete
-        rsAttach.MoveNext
-    Loop
+    If rsAttach.RecordCount > 0 Then
+        rsAttach.MoveFirst
+        Do Until rsAttach.EOF
+            rsAttach.Delete
+            If Not rsAttach.EOF Then rsAttach.MoveNext
+        Loop
+    End If
 
     rsAttach.AddNew
     rsAttach.Fields("FileData").LoadFromFile SciezkaPliku
     rsAttach.Update
 
-    rsAttach.Close
+    rs.Update
+ 
     rs.Close
-
 End Sub
 

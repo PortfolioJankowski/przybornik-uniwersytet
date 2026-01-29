@@ -10,8 +10,8 @@ Public Function GetSqlString(v As Variant) As String
     End If
 End Function
 
-Public Function GetClassesByCycleId(cycleId As Long) As String
-    GetClassesByCycleId = "SELECT * FROM Zajecia WHERE CyklDydaktycznyId = " & CStr(cycleId)
+Public Function GetClassesByCycleId(CycleId As Long) As String
+    GetClassesByCycleId = "SELECT * FROM Zajecia WHERE CyklDydaktycznyId = " & CStr(CycleId)
 End Function
 
 Public Function DeleteClassById(classId As Long) As String
@@ -28,4 +28,9 @@ End Function
 
 Public Function GetSubjectById(subjectId As Long) As String
     GetSubjectById = "Select * FROM Przedmioty where Identyfikator =" & CStr(subjectId)
+End Function
+
+Public Function InsertIntoClasses(Class As Class) As String
+    InsertIntoClasses = "INSERT INTO Zajecia (Tytul, Kolejnosc, Opis, CyklDydaktycznyId) Values ('" _
+    & Class.Title & "'," & CStr(Order) & ",'" & Class.Description & "'," & Class.CycleId & ")"
 End Function

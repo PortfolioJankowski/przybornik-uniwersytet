@@ -25,3 +25,11 @@ Public Enum PrzechowywanyPlik
     Prezentacja = 0
     Notatki = 1
 End Enum
+
+
+Public Type Class
+    Order As Integer
+    Title As String
+    Description As String
+    CycleId As String
+End Type

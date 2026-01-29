@@ -13,6 +13,7 @@ Public Const SubjectView As String = "PrzedmiotyView"
 'Tabele
 Public Const CyklDydaktycznyTable As String = "CyklDydaktyczny"
 Public Const PrzedmiotyTable As String = "Przedmioty"
+Public Const ZajeciaTable As String = "Zajecia"
 
 'Pomocnicze
 Public Const AddSubjectTabIndex As Integer = 0
