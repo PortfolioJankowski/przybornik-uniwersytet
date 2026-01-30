@@ -30,7 +30,4 @@ Public Function GetSubjectById(subjectId As Long) As String
     GetSubjectById = "Select * FROM Przedmioty where Identyfikator =" & CStr(subjectId)
 End Function
 
-Public Function InsertIntoClasses(Class As Class) As String
-    InsertIntoClasses = "INSERT INTO Zajecia (Tytul, Kolejnosc, Opis, CyklDydaktycznyId) Values ('" _
-    & Class.Title & "'," & CStr(Order) & ",'" & Class.Description & "'," & Class.CycleId & ")"
-End Function
+

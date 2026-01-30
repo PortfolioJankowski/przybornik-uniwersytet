@@ -9,6 +9,12 @@ Public Const CycleAddedEvent = "Dodano-cykl-dydaktyczny"
 Public Const PresentationDownloadedEvent = "Pobrano-prezentacje"
 Public Const SubjectDeletedEvent = "Usuniêto-przedmiot"
 Public Const SubjectEditedEvent = "Edytowano-przedmiot"
+Public Const ClassAddedEvent = "Dodano-zajecia"
+Public Const ClassEditedEvent = "Edytowano-zajecia"
+Public Const ClassDeletedEvent = "Usuniêto-zajêcia"
+Public Const NotesDownloadedEvent = "Pobrano-notatki"
+Public Const StudentsImportedEvent = "Zaimportowano-studentów"
+Public Const GroupAddedEvent = "Dodano-grupe-zajeciowa"
 
 Public Sub EventGateway(toSend As Zdarzenie)
     Dim rs As Recordset

@@ -44,6 +44,7 @@ Private Sub ChangeClassesVisibility()
         .lblCycle2.Visible = visibility
         .imgCycle.Visible = visibility
         .btnGoToClasses.Visible = visibility
+
     End With
 End Sub
 Private Sub LoadClasses()
@@ -110,6 +111,7 @@ End Sub
 
 Private Sub HandleGotoActivation()
     btnGoToSylabus.enabled = (idSylabus <> 0)
+    btnGoToClasses.Visible = (idClass <> 0)
 End Sub
 
 Private Sub HandleSubformsVisiblity()
@@ -301,8 +303,23 @@ On Error GoTo catch
         fileRepo.WgrajPlikDoBazy idZajecia, Prezentacja, txtAddFileName.value
     End If
     
+    Dim e As Zdarzenie
+    e.IsProcessed = True
+    e.Message = "Dodano zajêcia do cyklu " & CStr(idCycle) & _
+    " o tytule: " & txtAddDescription.value
+    e.Name = EventMdl.ClassAddedEvent
+    
+    EventGateway e
 
     HandleSubjectSelection
+    
+    txtAddDescription.value = ""
+    txtAddFileName.value = ""
+    txtAddNotes.value = ""
+    txtAddTitle.value = ""
+    cmbAddOrder.value = ""
+    
+  
 
     MsgBox "Zajecia zosta³y dodane!"
     Exit Sub
@@ -382,10 +399,60 @@ Private Sub btnDeleteClass_Click()
     On Error GoTo errorhandler
     CurrentDb.Execute query
     HandleSubjectSelection
+    tabClasses.value = 0
     
     Exit Sub
 errorhandler:
     MsgBox "Wystapi³ nieoczekiwany b³¹d", vbCritical
+End Sub
+
+Private Sub btnDownloadNotes_Click()
+    If (idClass = 0) Then Exit Sub
+    
+    Dim fso As FileDialog
+    Set fso = Application.FileDialog(msoFileDialogFolderPicker)
+    On Error GoTo catch
+    
+    Dim saveAsPath As String
+    With fso
+        .Title = "Wybierz lokalizacje zapisu"
+        .InitialFileName = "Notatki"
+        .Show
+        
+        saveAsPath = .SelectedItems(1)
+    End With
+    
+    If saveAsPath = "" Then Exit Sub
+    Dim fileRepo As New FileRepository
+    fileRepo.Init "Zajecia"
+    fileRepo.PobierzPlikZBazy idClass, Notatki, saveAsPath
+    
+    Dim e As Zdarzenie
+    e.IsProcessed = False
+    e.Name = EventMdl.NotesDownloadedEvent
+    e.Message = "Pobrano notatki dla zajêæ " & idClass
+    EventGateway e
+    
+    MsgBox "Pobrano"
+    Exit Sub
+    
+catch:
+    If (err.Number = 3839) Then
+        MsgBox "W wybranej lokalizacji znajduje siê ju¿ pobierany plik!"
+        Dim fileExists As wpis
+        fileExists.Description = "Pobierany plik ju¿ istnieje w wybranej lokalizacji"
+        fileExists.LogDate = Now
+        App.Logger.Add fileExists
+        Exit Sub
+    End If
+    
+    Dim log As wpis
+    log.CallStac = "Id zajecia =" & idClass & " sciezka zapisu=" & saveAsPath
+    log.ErrorNumber = err.Number
+    log.LogDate = Now
+    App.Logger.Add log
+    
+    MsgBox "Wyst¹pi³ nieoczekiwany b³¹d"
 End Sub
 
 Private Sub btnDownloadPres_Click()
@@ -494,6 +561,56 @@ catch:
     App.Logger.Add log
 End Sub
 
+
+Private Sub btnEditClassSAve_Click()
+    If idSubject = 0 Then Exit Sub
+    If idCycle = 0 Then Exit Sub
+    If idClass = 0 Then Exit Sub
+    On Error GoTo catch
+    
+    Dim sourceText As String: sourceText = "B³¹d walidacji"
+    
+    If IsNullOrWhiteSpace(txtEditClassDesc.value) Then
+        err.Raise 2, sourceText, "Opis zajêæ nie mo¿e byæ pusty"
+    End If
+    
+    If IsNullOrWhiteSpace(txtEditClassTitle.value) Then
+        err.Raise 2, sourceText, "Tytu³ zajêæ nie mo¿e byæ pusty"
+    End If
+        
+    If IsNullOrWhiteSpace(cmbEditOrder.value) Then
+        err.Raise 2, sourceText, "Wska¿ kolejnoœæ zajêæ"
+    End If
+    
+    Dim rs As Recordset
+    Set rs = CurrentDb.OpenRecordset(SqlStringService.GetClassById(idClass), dbOpenDynaset)
+    
+    rs.Edit
+    rs!Tytul = txtEditClassTitle.value
+    rs!Opis = txtEditClassDesc.value
+    rs!Kolejnosc = cmbEditOrder.value
+    rs.Update
+    
+    
+    Dim e As Zdarzenie
+    e.Name = EventMdl.ClassEditedEvent
+    e.Message = "Eytowano zajêcia o identyfikatorze: " & idClass
+    e.IsProcessed = True
+    e.ProcessingDate = Now
+    
+    EventGateway e
+    
+    MsgBox "Edytowano zajêcia"
+    Exit Sub
+catch:
+    If err.Number = 2 Then
+        MsgBox err.Description
+    End If
+End Sub
+
+Private Sub btnExit_Click()
+    DoCmd.Close acForm, Consts.SubjectView
+End Sub
 
 Private Sub btnGoToClasses_Click()
  If idClass = 0 Then
