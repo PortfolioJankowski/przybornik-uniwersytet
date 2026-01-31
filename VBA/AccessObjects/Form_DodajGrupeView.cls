@@ -47,10 +47,10 @@ On Error GoTo catch
     
     DodajGrupeZeStudentami cmbDirection.value, cmbSubject.value, txtNumber.value, txtYear.value, cmbDay.value, txtHour, txtStudents.value
     
-    Dim e As Zdarzenie
+    Dim e As zdarzenie
     With e
-        .Name = EventMdl.GroupAddedEvent
-        .IsProcessed = True
+        .name = EventMdl.GroupAddedEvent
+        .isProcessed = True
         .Message = "Pomyœlnie dodano grupê dla kierunku " & _
         cmbDirection.value & _
         " i przedmiotu " & _
@@ -112,7 +112,7 @@ Public Sub DodajGrupeZeStudentami( _
     Dim arrAlbumy() As String
     Dim i As Long
     Dim NrAlbumu As String
-    Dim StudentId As Long
+    Dim studentId As Long
 
     Set db = CurrentDb
     Set dictDni = SlownikDniTygodnia
@@ -159,18 +159,18 @@ Public Sub DodajGrupeZeStudentami( _
         NrAlbumu = Trim(arrAlbumy(i))
 
         ' pobranie StudentId
-        StudentId = Nz(DLookup("Identyfikator", "Studenci", _
+        studentId = Nz(DLookup("Identyfikator", "Studenci", _
                     "NrAlbumu = '" & NrAlbumu & "'"), 0)
 
-        If StudentId > 0 Then
+        If studentId > 0 Then
 
             ' sprawdzenie czy ju¿ jest w grupie
             If DCount("*", "StudenciWGrupach", _
-                "GrupaId = " & GrupaId & " AND StudentId = " & StudentId) = 0 Then
+                "GrupaId = " & GrupaId & " AND StudentId = " & studentId) = 0 Then
 
                 db.Execute _
                     "INSERT INTO StudenciWGrupach (GrupaId, StudentId) " & _
-                    "VALUES (" & GrupaId & ", " & StudentId & ")", _
+                    "VALUES (" & GrupaId & ", " & studentId & ")", _
                     dbFailOnError
             End If
 

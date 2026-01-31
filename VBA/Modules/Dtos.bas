@@ -2,10 +2,10 @@ Attribute VB_Name = "Dtos"
 Option Compare Database
 Option Explicit
 
-Public Type Zdarzenie
-     Name As String
+Public Type zdarzenie
+     name As String
      Message As String
-     IsProcessed As Boolean
+     isProcessed As Boolean
      ProcessingDate As Date
 End Type
 

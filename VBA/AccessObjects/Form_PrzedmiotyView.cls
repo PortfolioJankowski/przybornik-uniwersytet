@@ -16,7 +16,7 @@ Dim idClass As Long
 
 Private Enum SubjectCols
     Id = 0
-    Name = 1
+    name = 1
     desc = 2
     SylabusId = 3
     CycleId = 4
@@ -160,9 +160,9 @@ Private Sub btnAdd_Click()
         rsCykl!Nazwa = Me.txtAddName
     rsCykl.Update
 
-    Dim addCycleEvent As Zdarzenie
+    Dim addCycleEvent As zdarzenie
     With addCycleEvent
-        .IsProcessed = True
+        .isProcessed = True
         .Message = "Dodano cykl dydaktyczny o nazwie " & Me.txtAddName.value
         .ProcessingDate = DateTime.Now
     EventGateway addCycleEvent
@@ -208,11 +208,11 @@ Private Sub btnAdd_Click()
         End If
     Next i
     
-    Dim addSubjectEvent As Zdarzenie
+    Dim addSubjectEvent As zdarzenie
     With addSubjectEvent
-        .IsProcessed = True
+        .isProcessed = True
         .Message = "Dodano przedmiot " & txtAddName
-        .Name = EventMdl.CycleAddedEvent
+        .name = EventMdl.CycleAddedEvent
         .ProcessingDate = DateTime.Now
     End With
     EventGateway addSubjectEvent
@@ -303,11 +303,11 @@ On Error GoTo catch
         fileRepo.WgrajPlikDoBazy idZajecia, Prezentacja, txtAddFileName.value
     End If
     
-    Dim e As Zdarzenie
-    e.IsProcessed = True
+    Dim e As zdarzenie
+    e.isProcessed = True
     e.Message = "Dodano zajêcia do cyklu " & CStr(idCycle) & _
     " o tytule: " & txtAddDescription.value
-    e.Name = EventMdl.ClassAddedEvent
+    e.name = EventMdl.ClassAddedEvent
     
     EventGateway e
 
@@ -360,10 +360,10 @@ Private Sub btnDelete_Click()
 
     CurrentDb.Execute query, dbFailOnError
 
-    Dim e As Zdarzenie
-    e.Name = EventMdl.SubjectDeletedEvent
+    Dim e As zdarzenie
+    e.name = EventMdl.SubjectDeletedEvent
     e.Message = "Usuniêto przedmiot " & subjectName
-    e.IsProcessed = True
+    e.isProcessed = True
     e.ProcessingDate = Now
 
     EventGateway e
@@ -427,9 +427,9 @@ Private Sub btnDownloadNotes_Click()
     fileRepo.Init "Zajecia"
     fileRepo.PobierzPlikZBazy idClass, Notatki, saveAsPath
     
-    Dim e As Zdarzenie
-    e.IsProcessed = False
-    e.Name = EventMdl.NotesDownloadedEvent
+    Dim e As zdarzenie
+    e.isProcessed = False
+    e.name = EventMdl.NotesDownloadedEvent
     e.Message = "Pobrano notatki dla zajêæ " & idClass
     EventGateway e
     
@@ -476,9 +476,9 @@ Private Sub btnDownloadPres_Click()
     fileRepo.Init "Zajecia"
     fileRepo.PobierzPlikZBazy idClass, Prezentacja, saveAsPath
     
-    Dim e As Zdarzenie
-    e.IsProcessed = False
-    e.Name = EventMdl.PresentationDownloadedEvent
+    Dim e As zdarzenie
+    e.isProcessed = False
+    e.name = EventMdl.PresentationDownloadedEvent
     e.Message = "Pobrano prezentacje dla zajêæ " & idClass
     EventGateway e
     
@@ -539,12 +539,12 @@ Private Sub btnEdit_Click()
     rs.Close
     Set rs = Nothing
     
-    Dim e As Zdarzenie
+    Dim e As zdarzenie
     With e
-        .Name = EventMdl.SubjectEditedEvent
+        .name = EventMdl.SubjectEditedEvent
         .Message = "Edytowano przedmiot " & Me.txtEditName.value
         .ProcessingDate = Now
-        .IsProcessed = True
+        .isProcessed = True
     End With
     
     EventGateway e
@@ -592,10 +592,10 @@ Private Sub btnEditClassSAve_Click()
     rs.Update
     
     
-    Dim e As Zdarzenie
-    e.Name = EventMdl.ClassEditedEvent
+    Dim e As zdarzenie
+    e.name = EventMdl.ClassEditedEvent
     e.Message = "Eytowano zajêcia o identyfikatorze: " & idClass
-    e.IsProcessed = True
+    e.isProcessed = True
     e.ProcessingDate = Now
     
     EventGateway e

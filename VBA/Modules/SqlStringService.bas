@@ -31,3 +31,28 @@ Public Function GetSubjectById(subjectId As Long) As String
 End Function
 
 
+
+Public Function GetStudentIdByNrAlbumu(NrAlbumu As String) As Variant
+    Dim rs As DAO.Recordset
+    Dim sql As String
+
+    sql = "SELECT Identyfikator FROM Studenci WHERE NrAlbumu = '" & NrAlbumu & "'"
+
+    Set rs = CurrentDb.OpenRecordset(sql, dbOpenSnapshot)
+
+    If rs.EOF Then
+        GetStudentIdByNrAlbumu = Null
+    Else
+        GetStudentIdByNrAlbumu = rs!Identyfikator
+    End If
+
+    rs.Close
+    Set rs = Nothing
+End Function
+
+Public Function InsertStudentToGroup(groupId As Long, studentId As Long) As String
+   InsertStudentToGroup = _
+        "INSERT INTO StudenciWGrupach (GrupaId, StudentId) " & _
+        "VALUES (" & groupId & ", " & studentId & ")"
+
+End Function

@@ -86,8 +86,8 @@ Private Sub InitializeSession()
 End Sub
 
 Private Sub PublishLoginEvent()
-    Dim e As Zdarzenie
-    e.Name = EventMdl.UserLoggedInEvent
+    Dim e As zdarzenie
+    e.name = EventMdl.UserLoggedInEvent
     e.Message = "Pomyœlne logowanie"
 
     EventGateway e
@@ -103,6 +103,6 @@ Private Sub ClearError()
 End Sub
 
 Private Sub NavigateToLanding()
-    DoCmd.Close acForm, Me.Name, acSaveNo
+    DoCmd.Close acForm, Me.name, acSaveNo
     DoCmd.OpenForm "LandingView"
 End Sub

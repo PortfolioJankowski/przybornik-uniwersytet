@@ -29,10 +29,10 @@ Private Sub btnMassImport_Click()
         ImportujZExcela .SelectedItems(1)
     End With
 
-    Dim e As Zdarzenie
-        e.IsProcessed = True
+    Dim e As zdarzenie
+        e.isProcessed = True
         e.Message = "Pomyœlnie zaimportowano studentów " & Now
-        e.Name = EventMdl.StudentsImportedEvent
+        e.name = EventMdl.StudentsImportedEvent
     EventGateway e
     
     MsgBox "Zaimportowano studentów pomyœlnie"
@@ -69,7 +69,7 @@ Private Sub ImportujZExcela(sciezkaDoExcela As String)
     Set xlWS = xlWB.Worksheets(1)
 
 
-    ostatniWiersz = xlWS.Cells(xlWS.Rows.Count, 1).End(-4162).Row '
+    ostatniWiersz = xlWS.Cells(xlWS.Rows.Count, 1).end(-4162).Row '
 
 
     For i = 2 To ostatniWiersz

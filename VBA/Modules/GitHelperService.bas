@@ -61,7 +61,7 @@ Private Sub ExportModules()
     
     For Each cmp In Application.VBE.VBProjects(1).VBComponents
         If CStr(cmp.Type) = "1" Then
-            cmp.Export GetProjectPath & "Modules\" & cmp.Name & ".bas"
+            cmp.Export GetProjectPath & "Modules\" & cmp.name & ".bas"
         End If
     Next
 End Sub
@@ -70,7 +70,7 @@ Private Sub ExportClassModules()
     Dim cmp As Object
     For Each cmp In Application.VBE.VBProjects(1).VBComponents
         If CStr(cmp.Type) = "2" Then
-            cmp.Export GetProjectPath & "ClassModules\" & cmp.Name & ".cls"
+            cmp.Export GetProjectPath & "ClassModules\" & cmp.name & ".cls"
         End If
     Next
 End Sub
@@ -79,7 +79,7 @@ Private Sub ExportAccessObjects()
     Dim cmp As Object
     For Each cmp In Application.VBE.VBProjects(1).VBComponents
         If CStr(cmp.Type) = "100" Then
-            cmp.Export GetProjectPath & "AccessObjects\" & cmp.Name & ".cls"
+            cmp.Export GetProjectPath & "AccessObjects\" & cmp.name & ".cls"
         End If
     Next
 End Sub

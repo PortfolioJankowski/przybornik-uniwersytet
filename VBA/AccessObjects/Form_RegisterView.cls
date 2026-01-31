@@ -29,7 +29,7 @@ Private Sub btnRegister_Click()
     
     MsgBox "U¿ytkownik utworzony", vbOKOnly, "Sukces"
     
-    DoCmd.Close acForm, Me.Name, acSaveNo
+    DoCmd.Close acForm, Me.name, acSaveNo
     DoCmd.OpenForm "LoginView"
 End Sub
 

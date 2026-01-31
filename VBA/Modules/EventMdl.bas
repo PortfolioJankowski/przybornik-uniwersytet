@@ -15,17 +15,18 @@ Public Const ClassDeletedEvent = "Usuniêto-zajêcia"
 Public Const NotesDownloadedEvent = "Pobrano-notatki"
 Public Const StudentsImportedEvent = "Zaimportowano-studentów"
 Public Const GroupAddedEvent = "Dodano-grupe-zajeciowa"
+Public Const StudentAddedToGroup = "Dodano-studenta-do-grupy"
 
-Public Sub EventGateway(toSend As Zdarzenie)
+Public Sub EventGateway(toSend As zdarzenie)
     Dim rs As Recordset
     
     Set rs = CurrentDb.OpenRecordset("Zdarzenia", dbOpenDynaset)
     With rs
         .AddNew
             rs!Data = Now
-            rs!Nazwa = toSend.Name
+            rs!Nazwa = toSend.name
             rs!Wiadomosc = toSend.Message
-            rs!CzyPrzetworzono = toSend.IsProcessed
+            rs!CzyPrzetworzono = toSend.isProcessed
         .Update
     End With
 End Sub
@@ -68,7 +69,7 @@ EH:
     Dim wpis As wpis
     wpis.ErrorNumber = err.Number
     wpis.Description = err.Description
-    wpis.CallStac = "Dispatch event while dispatching " & eventRs!Name
+    wpis.CallStac = "Dispatch event while dispatching " & eventRs!name
     App.Logger.Add wpis
 End Sub
 
@@ -78,3 +79,12 @@ Private Sub MarkEventAsProcessed(rs As DAO.Recordset)
         rs!ProcessedAt = Now
     rs.Update
 End Sub
+
+Public Function EventFactory(Opis As String, name As String, isProcessed As Boolean) As zdarzenie
+    Dim e As zdarzenie
+    e.Message = Opis
+    e.name = name
+    e.ProcessingDate = Now
+    e.isProcessed = isProcessed
+    EventFactory = e
+End Function
