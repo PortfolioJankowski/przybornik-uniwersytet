@@ -27,7 +27,7 @@ End Function
 Private Function IEntityMapper_Map(rs As DAO.Recordset) As Object
     Dim u As New user
 
-    u.Id = rs!Id
+    u.id = rs!id
     u.NazwaUzytkownika = rs!NazwaUzytkownika
     u.HashHaslo = rs!HashHaslo
     u.Imie = rs!Imie
@@ -74,7 +74,7 @@ Private Function BuildUpdateSql(u As user) As String
         "Nazwisko=" & SqlStringService.GetSqlString(u.Nazwisko) & ", " & _
         "AdresEmail=" & SqlStringService.GetSqlString(u.AdresEmail) & ", " & _
         "Tytul=" & SqlStringService.GetSqlString(u.Tytul) & _
-        " WHERE Id=" & u.Id
+        " WHERE Id=" & u.id
 End Function
 
 Private Function Q(v As Variant) As String

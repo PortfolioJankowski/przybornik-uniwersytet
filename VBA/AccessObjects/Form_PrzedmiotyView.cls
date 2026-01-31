@@ -15,7 +15,7 @@ Dim idCycle As Long
 Dim idClass As Long
 
 Private Enum SubjectCols
-    Id = 0
+    id = 0
     name = 1
     desc = 2
     SylabusId = 3
@@ -170,7 +170,7 @@ Private Sub btnAdd_Click()
     
     ' Pobranie ID nowo dodanego cyklu
     rsCykl.Bookmark = rsCykl.LastModified
-    lngCyklID = rsCykl!Id
+    lngCyklID = rsCykl!id
 
     rsCykl.Close
     Set rsCykl = Nothing

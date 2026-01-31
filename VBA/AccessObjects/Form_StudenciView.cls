@@ -69,7 +69,7 @@ Private Sub ImportujZExcela(sciezkaDoExcela As String)
     Set xlWS = xlWB.Worksheets(1)
 
 
-    ostatniWiersz = xlWS.Cells(xlWS.Rows.Count, 1).end(-4162).Row '
+    ostatniWiersz = xlWS.Cells(xlWS.Rows.Count, 1).End(-4162).Row '
 
 
     For i = 2 To ostatniWiersz

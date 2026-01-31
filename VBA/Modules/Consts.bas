@@ -13,6 +13,8 @@ Public Const DirectionsView As String = "KierunkiView"
 Public Const StudentsView As String = "StudenciView"
 Public Const GrupyZajecioweView As String = "GrupyZajecioweView"
 Public Const DodajGrupeView As String = "DodajGrupeView"
+Public Const RozpocznijZajeciaView As String = "RozpocznijZajeciaView"
+
 'Tabele
 Public Const CyklDydaktycznyTable As String = "CyklDydaktyczny"
 Public Const PrzedmiotyTable As String = "Przedmioty"

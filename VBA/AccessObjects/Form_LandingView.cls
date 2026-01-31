@@ -25,6 +25,20 @@ Private Sub Command14_Click()
     DoCmd.OpenForm Consts.SylabusView
 End Sub
 
+Private Sub Command22_Click()
+   If lbxSchedule.ItemsSelected.Count = 0 Then
+        MsgBox "Zaznacz zajêcia, które chcesz rozpocz¹æ"
+        Exit Sub
+    End If
+    Form_RozpocznijZajeciaView.SetUp (lbxSchedule.value)
+    
+    DoCmd.OpenForm _
+        "RozpocznijZajeciaView", , , , , , lbxSchedule.Column(0)
+        
+    
+
+End Sub
+
 Private Sub Form_Load()
 If App Is Nothing Then
     Exit Sub

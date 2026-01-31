@@ -23,10 +23,10 @@ Private mKomunikat As String
 ' === Identity ===
 Public Haslo As String
 Public PowtorzHaslo As String
-Public Property Get Id() As Long
-    Id = mId
+Public Property Get id() As Long
+    id = mId
 End Property
-Public Property Let Id(ByVal value As Long)
+Public Property Let id(ByVal value As Long)
     mId = value
 End Property
 
