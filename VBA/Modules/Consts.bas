@@ -19,6 +19,7 @@ Public Const RozpocznijZajeciaView As String = "RozpocznijZajeciaView"
 Public Const CyklDydaktycznyTable As String = "CyklDydaktyczny"
 Public Const PrzedmiotyTable As String = "Przedmioty"
 Public Const ZajeciaTable As String = "Zajecia"
+Public Const ZrealizowaneZajeciaTable As String = "ZrealizowaneZajecia"
 
 
 'Pomocnicze

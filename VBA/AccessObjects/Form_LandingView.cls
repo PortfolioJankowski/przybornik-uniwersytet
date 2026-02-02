@@ -30,13 +30,13 @@ Private Sub Command22_Click()
         MsgBox "Zaznacz zajêcia, które chcesz rozpocz¹æ"
         Exit Sub
     End If
-    Form_RozpocznijZajeciaView.SetUp (lbxSchedule.value)
+    
     
     DoCmd.OpenForm _
-        "RozpocznijZajeciaView", , , , , , lbxSchedule.Column(0)
-        
+        "RozpocznijZajeciaView"
     
-
+    Form_RozpocznijZajeciaView!txtGroupId.value = lbxSchedule.value
+    Form_RozpocznijZajeciaView.Initialize
 End Sub
 
 Private Sub Form_Load()
