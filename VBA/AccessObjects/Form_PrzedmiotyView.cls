@@ -267,9 +267,9 @@ On Error GoTo catch
         err.Raise 2, "B³¹d walidacji", "Nale¿y ustaliæ kolejnoœæ zajêæ"
     End If
     
-    Dim fileRepo As FileRepository
-    Set fileRepo = New FileRepository
-    fileRepo.Init Consts.ZajeciaTable
+    Dim FileRepo As FileRepository
+    Set FileRepo = New FileRepository
+    FileRepo.Init Consts.ZajeciaTable
     
     If (IsNullOrWhiteSpace(txtAddFileName.value) Or IsNullOrWhiteSpace(txtAddNotes.value)) Then
         Dim odpowiedz As Byte
@@ -296,11 +296,11 @@ On Error GoTo catch
     rs.Close
     
     If Not IsNullOrWhiteSpace(txtAddFileName.value) Then
-        fileRepo.WgrajPlikDoBazy idZajecia, Prezentacja, txtAddFileName.value
+        FileRepo.WgrajPlikDoBazy idZajecia, Prezentacja, txtAddFileName.value
     End If
     
      If Not IsNullOrWhiteSpace(txtAddNotes.value) Then
-        fileRepo.WgrajPlikDoBazy idZajecia, Prezentacja, txtAddFileName.value
+        FileRepo.WgrajPlikDoBazy idZajecia, Prezentacja, txtAddFileName.value
     End If
     
     Dim e As zdarzenie
@@ -423,9 +423,9 @@ Private Sub btnDownloadNotes_Click()
     End With
     
     If saveAsPath = "" Then Exit Sub
-    Dim fileRepo As New FileRepository
-    fileRepo.Init "Zajecia"
-    fileRepo.PobierzPlikZBazy idClass, Notatki, saveAsPath
+    Dim FileRepo As New FileRepository
+    FileRepo.Init "Zajecia"
+    FileRepo.PobierzPlikZBazy idClass, Notatki, saveAsPath
     
     Dim e As zdarzenie
     e.isProcessed = False
@@ -472,9 +472,9 @@ Private Sub btnDownloadPres_Click()
     End With
     
     If saveAsPath = "" Then Exit Sub
-    Dim fileRepo As New FileRepository
-    fileRepo.Init "Zajecia"
-    fileRepo.PobierzPlikZBazy idClass, Prezentacja, saveAsPath
+    Dim FileRepo As New FileRepository
+    FileRepo.Init "Zajecia"
+    FileRepo.PobierzPlikZBazy idClass, Prezentacja, saveAsPath
     
     Dim e As zdarzenie
     e.isProcessed = False
