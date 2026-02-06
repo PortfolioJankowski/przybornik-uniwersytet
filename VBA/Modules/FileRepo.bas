@@ -38,7 +38,7 @@ catch:
         Dim fileExists As wpis
         fileExists.Description = "Pobierany plik ju¿ istnieje w wybranej lokalizacji"
         fileExists.LogDate = Now
-        App.Logger.Add fileExists
+        Logger.Add fileExists
         Exit Sub
     End If
     
@@ -46,7 +46,7 @@ catch:
     log.CallStac = "Id zajecia =" & idClass & " sciezka zapisu=" & saveAsPath
     log.ErrorNumber = err.Number
     log.LogDate = Now
-    App.Logger.Add log
+    Logger.Add log
     
     MsgBox "Wyst¹pi³ nieoczekiwany b³¹d"
 End Sub
@@ -87,7 +87,7 @@ catch:
         Dim fileExists As wpis
         fileExists.Description = "Pobierany plik ju¿ istnieje w wybranej lokalizacji"
         fileExists.LogDate = Now
-        App.Logger.Add fileExists
+        Logger.Add fileExists
         Exit Sub
     End If
     
@@ -95,7 +95,7 @@ catch:
     log.CallStac = "Id zajecia =" & idClass & " sciezka zapisu=" & saveAsPath
     log.ErrorNumber = err.Number
     log.LogDate = Now
-    App.Logger.Add log
+    Logger.Add log
     
     MsgBox "Wyst¹pi³ nieoczekiwany b³¹d"
 End Sub

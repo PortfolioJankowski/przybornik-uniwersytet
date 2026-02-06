@@ -31,5 +31,5 @@ Public Type Class
     Order As Integer
     Title As String
     Description As String
-    CycleId As String
+    cycleId As String
 End Type

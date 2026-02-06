@@ -52,7 +52,7 @@ catch:
         .ErrorNumber = err.Number
     End With
     
-    App.Logger.Add log
+    Logger.Add log
 End Sub
 
 Private Sub btnExit_Click()

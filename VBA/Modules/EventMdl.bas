@@ -70,7 +70,7 @@ EH:
     wpis.ErrorNumber = err.Number
     wpis.Description = err.Description
     wpis.CallStac = "Dispatch event while dispatching " & eventRs!name
-    App.Logger.Add wpis
+    Logger.Add wpis
 End Sub
 
 Private Sub MarkEventAsProcessed(rs As DAO.Recordset)

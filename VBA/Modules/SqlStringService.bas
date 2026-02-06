@@ -10,8 +10,8 @@ Public Function GetSqlString(v As Variant) As String
     End If
 End Function
 
-Public Function GetClassesByCycleId(CycleId As Long) As String
-    GetClassesByCycleId = "SELECT * FROM Zajecia WHERE CyklDydaktycznyId = " & CStr(CycleId)
+Public Function GetClassesByCycleId(cycleId As Long) As String
+    GetClassesByCycleId = "SELECT * FROM Zajecia WHERE CyklDydaktycznyId = " & CStr(cycleId)
 End Function
 
 Public Function DeleteClassById(classId As Long) As String
@@ -30,6 +30,9 @@ Public Function GetSubjectById(subjectId As Long) As String
     GetSubjectById = "Select * FROM Przedmioty where Identyfikator =" & CStr(subjectId)
 End Function
 
+Public Function GetClassIdByClassNoAndCycleID(classNo As String, groupId As String) As String
+    GetClassIdByClassNoAndCycleID = "SELECT Identyfikator from Zajecia WHERE CyklDydaktycznyId =" & groupId & "And Kolejnosc=" & classNo
+End Function
 
 
 Public Function GetStudentIdByNrAlbumu(NrAlbumu As String) As Variant

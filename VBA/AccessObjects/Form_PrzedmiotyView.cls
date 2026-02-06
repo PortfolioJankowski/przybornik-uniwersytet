@@ -19,7 +19,7 @@ Private Enum SubjectCols
     name = 1
     desc = 2
     SylabusId = 3
-    CycleId = 4
+    cycleId = 4
 End Enum
 
 Private Sub HandleSubjectSelection()
@@ -229,7 +229,7 @@ catch:
     wpis.Description = "B³¹d podczas dodawania przedmiotu " & Me.txtAddName
     wpis.ErrorNumber = err.Number
     wpis.LogDate = DateTime.Now
-    App.Logger.Add wpis
+    Logger.Add wpis
 End Sub
 
 Private Sub ClearEditClassForm()
@@ -381,7 +381,7 @@ catch:
     Dim log As wpis
     log.Description = err.Description
     log.ErrorNumber = err.Number
-    App.Logger.Add log
+    Logger.Add log
 
     MsgBox "Nie uda³o siê usun¹æ przedmiotu"
 End Sub
@@ -442,7 +442,7 @@ catch:
         Dim fileExists As wpis
         fileExists.Description = "Pobierany plik ju¿ istnieje w wybranej lokalizacji"
         fileExists.LogDate = Now
-        App.Logger.Add fileExists
+        Logger.Add fileExists
         Exit Sub
     End If
     
@@ -450,7 +450,7 @@ catch:
     log.CallStac = "Id zajecia =" & idClass & " sciezka zapisu=" & saveAsPath
     log.ErrorNumber = err.Number
     log.LogDate = Now
-    App.Logger.Add log
+    Logger.Add log
     
     MsgBox "Wyst¹pi³ nieoczekiwany b³¹d"
 End Sub
@@ -491,7 +491,7 @@ catch:
         Dim fileExists As wpis
         fileExists.Description = "Pobierany plik ju¿ istnieje w wybranej lokalizacji"
         fileExists.LogDate = Now
-        App.Logger.Add fileExists
+        Logger.Add fileExists
         Exit Sub
     End If
     
@@ -499,7 +499,7 @@ catch:
     log.CallStac = "Id zajecia =" & idClass & " sciezka zapisu=" & saveAsPath
     log.ErrorNumber = err.Number
     log.LogDate = Now
-    App.Logger.Add log
+    Logger.Add log
     
     MsgBox "Wyst¹pi³ nieoczekiwany b³¹d"
 End Sub
@@ -558,7 +558,7 @@ catch:
     Dim log As wpis
     log.ErrorNumber = err.Number
     log.Description = err.Description
-    App.Logger.Add log
+    Logger.Add log
 End Sub
 
 

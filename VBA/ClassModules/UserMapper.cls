@@ -77,11 +77,11 @@ Private Function BuildUpdateSql(u As user) As String
         " WHERE Id=" & u.id
 End Function
 
-Private Function Q(v As Variant) As String
+Private Function q(v As Variant) As String
     If IsNull(v) Or v = "" Then
-        Q = "NULL"
+        q = "NULL"
     Else
-        Q = "'" & Replace(v, "'", "''") & "'"
+        q = "'" & Replace(v, "'", "''") & "'"
     End If
 End Function
 

@@ -75,7 +75,7 @@ catch:
         .LogDate = Now
     End With
     
-    App.Logger.Add log
+    Logger.Add log
 End Sub
 
 Private Function SlownikDniTygodnia() As Object

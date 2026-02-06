@@ -11,16 +11,18 @@ Option Compare Database
 Option Explicit
 Public groupId As String
 Public classNo As String
+Public actualClassId As String
+Public classId As String
+Public cycleId As String
 Dim isFinished As Boolean
 
 Private Sub btnDownloadNotes_Click()
-    FileRepo.DownloadNotes (CLng(classNo))
+    FileRepo.DownloadNotes (CLng(classId))
 End Sub
 
 'CLASS ID DO ZNALEZIENIA
 Private Sub btnDownloadPres_Click()
-    FileRepo.DownloadPres (CLng(classNo))
-    
+    FileRepo.DownloadPres (CLng(classId))
 End Sub
 
 Private Sub btnExit_Click()
@@ -30,86 +32,84 @@ End Sub
 
 Public Sub Initialize()
     groupId = txtGroupId.value
-    isFinished = False 'zajecia jeszcze nie zrealizowane
     
-    Dim lastClassQuery As String
-    Dim classInfoQuery As String
+    Dim rsZajecia As DAO.Recordset
+    Dim rsRealized As DAO.Recordset
+    Dim lastCompletedID As Variant
+    Dim currentClassNo As Long
     Dim studentsQuery As String
 
-    Dim lastclassNo As Variant
-    Dim actualClassNo As Long
+    Set rsRealized = CurrentDb.OpenRecordset( _
+        "SELECT id, ZajeciaId, CzyZrealizowano, Notatki FROM ZrealizowaneZajecia " & _
+        "WHERE GrupyZajecioweId = " & groupId & " AND CzyZrealizowano = False", dbOpenDynaset)
 
-    ' --- 1. OSTATNIE ZREALIZOWANE ZAJÊCIA ---
-    lastClassQuery = _
-        "SELECT TOP 1 ZajeciaId " & _
-        "FROM ZrealizowaneZajecia " & _
-        "WHERE GrupyZajecioweId = " & groupId & " " & " CzyZrealizowano=False" & _
-        "ORDER BY ZajeciaId DESC"
-
-    lastclassNo = DLookup("ZajeciaId", _
-                          "ZrealizowaneZajecia", _
-                          "GrupyZajecioweId = " & groupId)
-
-    If IsNull(lastclassNo) Then
-        actualClassNo = 1
+    If Not (rsRealized.EOF And rsRealized.BOF) Then
+        actualClassId = CStr(rsRealized!id)
+        currentClassNo = rsRealized!ZajeciaId
+        isFinished = False
     Else
-        actualClassNo = CLng(lastclassNo) + 1
+        lastCompletedID = DMax("ZajeciaId", "ZrealizowaneZajecia", _
+                               "GrupyZajecioweId = " & groupId & " AND CzyZrealizowano = True")
+        
+        If IsNull(lastCompletedID) Then
+            currentClassNo = 1
+        Else
+            currentClassNo = CLng(lastCompletedID) + 1
+        End If
+
+        rsRealized.AddNew
+        rsRealized!GrupyZajecioweId = groupId
+        rsRealized!ZajeciaId = currentClassNo
+        rsRealized!CzyZrealizowano = False
+        rsRealized!Notatki = ""
+        rsRealized.Update
+        
+        rsRealized.Bookmark = rsRealized.LastModified
+        actualClassId = CStr(rsRealized!id)
+        isFinished = False
     End If
-
-    classNo = actualClassNo
-
-    ' --- 2. INFO O AKTUALNYCH ZAJÊCIACH ---
-
-    Dim zajeciaQuery As String
-    classInfoQuery = "SELECT * FROM Zajecia WHERE CyklDydaktycznyId in (" & _
-    "SELECT CyklDydaktycznyId FROM Przedmioty Where Identyfikator in (" & _
-    "SELECT PrzedmiotId From GrupyZajeciowe where Identyfikator = " & groupId & "))" & _
-    " AND Kolejnosc = " & actualClassNo
     
-     Dim rsZajecia As Recordset
+    classNo = CStr(currentClassNo)
+    txtIdZrealizowaneZajecia = actualClassId
+    Dim classInfoQuery As String
+    classInfoQuery = "SELECT * FROM Zajecia WHERE CyklDydaktycznyId IN (" & _
+        "SELECT CyklDydaktycznyId FROM Przedmioty WHERE Identyfikator IN (" & _
+        "SELECT PrzedmiotId FROM GrupyZajeciowe WHERE Identyfikator = " & groupId & "))" & _
+        " AND Kolejnosc = " & currentClassNo
+    
     Set rsZajecia = CurrentDb.OpenRecordset(classInfoQuery, dbOpenSnapshot)
     
     If rsZajecia.EOF And rsZajecia.BOF Then
-        err.Raise 2, , "Nie odnaleziono zajêæ"
+        MsgBox "B³¹d: Nie odnaleziono definicji zajêæ nr " & currentClassNo & " dla tej grupy.", vbCritical
+        Exit Sub
     End If
+
     txtDesc = rsZajecia!Opis
     txtTitle = rsZajecia!Tytul
     txtNumber = rsZajecia!Kolejnosc
     txtNumber.enabled = False
-    txtNotes = rsZajecia!Notatki
+    
+    If Not IsNull(rsRealized) Then
+         txtNotes.value = rsRealized!Notatki
+    End If
+    
+    classId = CStr(rsZajecia!Identyfikator)
+    cycleId = CStr(rsZajecia!CyklDydaktycznyId)
 
-    ' --- 3. LISTA STUDENTÓW Z GRUPY ---
-    studentsQuery = _
-        "SELECT Identyfikator, NrAlbumu,  Imie, Nazwisko FROM Studenci " & _
-        "WHERE Identyfikator IN (" & _
-            "SELECT StudentId " & _
-            "FROM StudenciWGrupach " & _
-            "WHERE GrupaId = " & groupId & _
-        ")"
+    studentsQuery = "SELECT Identyfikator, NrAlbumu, Imie, Nazwisko FROM Studenci " & _
+                    "WHERE Identyfikator IN (SELECT StudentId FROM StudenciWGrupach " & _
+                    "WHERE GrupaId = " & groupId & ")"
 
-    Me.lbxPresent.ColumnCount = 4
-    Me.lbxPresent.BoundColumn = 1
-    
-    ' przyk³ad: przypisanie do listboxa
-    Me.lbxPresent.RowSource = studentsQuery
-    Me.lbxPresent.Requery
-    
-    Dim rsNewClass As DAO.Recordset
-    Set rsNewClass = CurrentDb.OpenRecordset(Consts.ZrealizowaneZajeciaTable, dbOpenDynaset)
-    
-    rsNewClass.AddNew
-    rsNewClass!GrupyZajecioweId = groupId
-    rsNewClass!ZajeciaId = classNo
-    rsNewClass!CzyZrealizowano = False
-    rsNewClass!Notatki = ""
-    rsNewClass.Update
-    
-    rsNewClass.Bookmark = rsNewClass.LastModified
-    txtIdZrealizowaneZajecia = rsNewClass!id
-    
-    rsNewClass.Close
-    Set rsNewClass = Nothing
+    With Me.lbxPresent
+        .ColumnCount = 4
+        .BoundColumn = 1
+        .RowSource = studentsQuery
+        .Requery
+    End With
+
+    rsRealized.Close
     rsZajecia.Close
+    Set rsRealized = Nothing
     Set rsZajecia = Nothing
 End Sub
 

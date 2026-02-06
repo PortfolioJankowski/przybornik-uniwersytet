@@ -43,7 +43,7 @@ catch:
     wpis.CallStac = "Importowanie studentów z excela"
     wpis.Description = err.Description
     wpis.ErrorNumber = err.Number
-    App.Logger.Add wpis
+    Logger.Add wpis
 End Sub
 
 

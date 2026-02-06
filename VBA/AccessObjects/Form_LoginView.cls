@@ -82,7 +82,6 @@ Private Sub InitializeSession()
     Set App = New AppContext
     Set App.CurrentUser = ORM.CreateUserFromRecord(mUserRecordset)
     Set App.db = CurrentDb
-    Set App.Logger = New Logger
 End Sub
 
 Private Sub PublishLoginEvent()
