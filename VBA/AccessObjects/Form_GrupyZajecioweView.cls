@@ -58,3 +58,11 @@ End Sub
 Private Sub btnExit_Click()
     DoCmd.Close acForm, Consts.GrupyZajecioweView
 End Sub
+
+Private Sub Command125_Click()
+    Dim reportName As String
+
+    reportName = "RaportGlobalnaObecnoscPerGrupa"
+
+    DoCmd.OpenReport reportName, acViewPreview, , "IdGrupy = " & Me.Identyfikator
+End Sub

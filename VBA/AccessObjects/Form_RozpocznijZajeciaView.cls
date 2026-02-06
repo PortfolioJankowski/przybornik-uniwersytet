@@ -40,7 +40,7 @@ Public Sub Initialize()
     Dim studentsQuery As String
 
     Set rsRealized = CurrentDb.OpenRecordset( _
-        "SELECT id, ZajeciaId, CzyZrealizowano, Notatki FROM ZrealizowaneZajecia " & _
+        "SELECT * FROM ZrealizowaneZajecia " & _
         "WHERE GrupyZajecioweId = " & groupId & " AND CzyZrealizowano = False", dbOpenDynaset)
 
     If Not (rsRealized.EOF And rsRealized.BOF) Then
@@ -143,3 +143,77 @@ Private Sub btnRemoveAbsent_Click()
     Next i
 End Sub
 
+Public Sub SaveClassAndAttendance()
+    On Error GoTo Err_Save
+    
+    Dim db As DAO.database
+    Dim rsPresence As DAO.Recordset
+    Dim i As Long
+    Dim studentId As Long
+    
+    Set db = CurrentDb
+    
+    Dim qdf As DAO.QueryDef
+    Set qdf = db.CreateQueryDef("", "UPDATE ZrealizowaneZajecia SET " & _
+               "CzyZrealizowano = True, " & _
+               "Notatki = [pNotes], " & _
+               "DataRealizacji = Now() " & _
+               "WHERE id = " & actualClassId)
+    
+    qdf.Parameters("pNotes") = Nz(Me.txtNotes.value, "")
+    qdf.Execute dbFailOnError
+    
+    db.Execute "DELETE FROM Obecnosc WHERE ZajeciaId = " & actualClassId, dbFailOnError
+    
+    Set rsPresence = db.OpenRecordset("Obecnosc", dbOpenDynaset)
+    
+    For i = 0 To Me.lbxPresent.ListCount - 1
+        studentId = CLng(Me.lbxPresent.ItemData(i))
+        
+        rsPresence.AddNew
+        rsPresence!ZajeciaId = actualClassId
+        rsPresence!studentId = studentId
+        rsPresence!Data = Date
+        rsPresence!CzyObecny = True
+        rsPresence.Update
+    Next i
+    
+    For i = 0 To Me.lbxAbsent.ListCount - 1
+        studentId = CLng(Me.lbxAbsent.Column(0, i))
+        
+        db.Execute "UPDATE Obecnosc SET CzyObecny = False " & _
+                   "WHERE ZajeciaId = " & actualClassId & " AND StudentId = " & studentId, dbFailOnError
+    Next i
+    
+    isFinished = True
+    MsgBox "Zajêcia oraz lista obecnoœci zosta³y zapisane pomyœlnie.", vbInformation
+    
+    Dim e As zdarzenie
+    e = EventFactory("Zapis zrealizowanych zajec " & actualClassId, EventMdl.FinishedClassSaved, True)
+    EventMdl.EventGateway e
+    
+    DoCmd.Close acForm, Consts.RozpocznijZajeciaView
+    
+    
+Exit_Save:
+    If Not rsPresence Is Nothing Then rsPresence.Close
+    Set rsPresence = Nothing
+    Set db = Nothing
+    Exit Sub
+
+Err_Save:
+    Dim log As wpis
+    With log
+        .Description = "B³¹d podczas zapisu: " & err.Description
+        .CallStac = "Zapisywanie zrealizowanych zajec"
+        .ErrorNumber = err.Number
+    End With
+    Logger.Add log
+    
+    MsgBox "B³¹d podczas zapisu: " & err.Description, vbCritical
+    Resume Exit_Save
+End Sub
+
+Private Sub btnSaveClass_Click()
+     SaveClassAndAttendance
+End Sub

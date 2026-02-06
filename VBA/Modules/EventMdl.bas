@@ -16,6 +16,7 @@ Public Const NotesDownloadedEvent = "Pobrano-notatki"
 Public Const StudentsImportedEvent = "Zaimportowano-studentów"
 Public Const GroupAddedEvent = "Dodano-grupe-zajeciowa"
 Public Const StudentAddedToGroup = "Dodano-studenta-do-grupy"
+Public Const FinishedClassSaved = "Zrealizowano-zajecia-zapisano"
 
 Public Sub EventGateway(toSend As zdarzenie)
     Dim rs As Recordset
